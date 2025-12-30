@@ -2,685 +2,1960 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Burak CASCADE | Audit Protocol v10.0</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="Al-Mohafiz: Interactive microbiome-metabolic modeling using Shannon Entropy to predict Type 2 Diabetes risk. Built by Waseem Ahanger for BURAK Platform.">
+    <meta name="keywords" content="microbiome, Type 2 Diabetes, Shannon Entropy, metabolic health, Akkermansia, gut health, BURAK, computational medicine">
+    <meta name="author" content="Waseem Ahanger">
+    <meta name="theme-color" content="#10b981">
     
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Al-Mohafiz | BURAK Clinical Intelligence">
+    <meta property="og:description" content="Interactive gut-metabolic modeling for T2D risk assessment using Shannon Entropy. Pure math. Zero AI.">
+    <meta property="og:image" content="https://via.placeholder.com/1200x630/0a0e27/10b981?text=AL-MOHAFIZ">
     
-    <!-- Core React Libraries -->
-    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:title" content="Al-Mohafiz | BURAK Clinical Intelligence">
+    <meta property="twitter:description" content="Interactive gut-metabolic modeling for T2D risk assessment. Pure math. Zero AI.">
     
-    <!-- Babel for JSX compilation -->
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    
+    <title>Al-Mohafiz | BURAK Clinical Intelligence Platform</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&family=Space+Grotesk:wght@400;600;800&family=Noto+Sans+Arabic:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+        * { 
+            margin: 0; padding: 0; box-sizing: border-box; 
+            -webkit-tap-highlight-color: transparent;
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
         
+        :root {
+            --emerald: #10b981; --amber: #f59e0b; --rose: #ef4444; 
+            --blue: #3b82f6; --purple: #a855f7; --cyan: #06b6d4; --indigo: #6366f1;
+            --bg-body: #05070a; --border: rgba(255,255,255,0.08); 
+            --bg-card: rgba(255,255,255,0.06); --text-primary: #f8fafc; 
+            --text-muted: #94a3b8; --ring-color: var(--emerald);
+        }
+
         body {
-            font-family: 'Inter', sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #fdfcf8;
-            -webkit-font-smoothing: antialiased;
-            color: #0f172a;
-            font-size: 13px;
+            font-family: 'Space Grotesk', 'Noto Sans Arabic', sans-serif;
+            background: linear-gradient(135deg, #0a0e27 0%, #05070a 100%);
+            color: var(--text-primary); min-height: 100vh; overflow-x: hidden;
+            position: relative;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(99, 102, 241, 0.05), transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(16, 185, 129, 0.05), transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(168, 85, 247, 0.03), transparent 60%);
+            animation: backgroundShift 20s ease-in-out infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        @keyframes backgroundShift {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
         }
 
-        @keyframes scan-line {
-            0% { transform: translateY(-100%); }
-            100% { transform: translateY(400%); }
-        }
-        .scan-line {
-            height: 2px;
-            background: linear-gradient(90deg, transparent, #3b82f6, transparent);
-            animation: scan-line 2.5s linear infinite;
+        /* Animated Background Particles */
+        .particle-bg {
+            position: fixed; inset: 0; z-index: 0; pointer-events: none;
+            background: radial-gradient(circle at 20% 50%, rgba(99, 102, 241, 0.03) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 80%, rgba(16, 185, 129, 0.03) 0%, transparent 50%);
         }
 
-        .animate-in {
-            animation: fadeIn 0.4s ease-out forwards;
+        .story-canvas {
+            width: 100vw; min-height: 100vh; position: relative; z-index: 1;
+            display: flex; flex-direction: column;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
+        /* Enhanced Header */
+        header {
+            padding: 25px 50px; display: flex; justify-content: space-between; align-items: center;
+            position: fixed; top: 0; left: 0; right: 0; z-index: 3000; 
+            border-bottom: 1px solid var(--border);
+            background: rgba(5, 7, 10, 0.95); backdrop-filter: blur(25px);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+        .brand { display: flex; align-items: center; gap: 15px; }
+        .brand-icon { 
+            width: 48px; height: 48px; background: linear-gradient(135deg, var(--emerald), var(--cyan));
+            border-radius: 12px; display: flex; align-items: center; justify-content: center;
+            font-size: 24px; box-shadow: 0 4px 20px rgba(16, 185, 129, 0.3);
+        }
+        .brand h1 { 
+            font-size: 18px; font-weight: 900; letter-spacing: 3px;
+            background: linear-gradient(135deg, #fff, var(--cyan));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .arabic-sub { 
+            font-family: 'Noto Sans Arabic'; font-size: 11px; 
+            color: var(--cyan); margin-top: 2px; opacity: 0.8;
+        }
+
+        .header-stats {
+            display: flex; gap: 25px; align-items: center;
+        }
+        .stat-pill {
+            padding: 10px 20px; border-radius: 20px; 
+            background: rgba(255,255,255,0.05); border: 1px solid var(--border);
+            font-size: 11px; font-weight: 800; text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .stat-pill span { 
+            font-family: 'JetBrains Mono'; font-size: 16px; 
+            margin-left: 8px; 
+            /* color removed - controlled by JavaScript */
+            transition: color 0.4s ease;
+        }
+
+        /* Progress Navigation */
+        .progress-nav {
+            position: fixed; top: 100px; left: 50%; transform: translateX(-50%);
+            z-index: 2500; display: flex; gap: 12px; align-items: center;
+            background: rgba(5, 7, 10, 0.9); backdrop-filter: blur(15px);
+            padding: 15px 30px; border-radius: 40px; border: 1px solid var(--border);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+        }
+        .nav-dot { 
+            width: 12px; height: 12px; border-radius: 50%; 
+            background: var(--border); cursor: pointer; transition: 0.4s;
+            position: relative;
+        }
+        .nav-dot:hover { transform: scale(1.3); background: rgba(59, 130, 246, 0.5); }
+        .nav-dot.active { 
+            width: 40px; border-radius: 20px; background: var(--blue); 
+            box-shadow: 0 0 20px var(--blue);
+        }
+        .nav-label {
+            position: absolute; top: -30px; left: 50%; transform: translateX(-50%);
+            font-size: 9px; font-weight: 800; text-transform: uppercase;
+            white-space: nowrap; opacity: 0; transition: 0.3s; pointer-events: none;
+            color: var(--cyan);
+        }
+        .nav-dot:hover .nav-label { opacity: 1; top: -35px; }
+
+        .stage {
+            position: absolute; inset: 0; display: flex; flex-direction: column; 
+            justify-content: flex-start; align-items: center; 
+            padding: 180px 50px 50px 50px; transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            opacity: 0; pointer-events: none; overflow-y: auto;
+        }
+        .stage.active { opacity: 1; pointer-events: all; position: relative; }
+
+        /* ============ PHASE 1: THE GUARDIAN ============ */
+        .guardian-grid { 
+            display: grid; grid-template-columns: 1.3fr 1fr; gap: 50px; 
+            width: 100%; max-width: 1400px; align-items: flex-start; 
+        }
+
+        /* Mega Shannon Dial */
+        .mega-dial-container {
+            position: relative; padding: 40px;
+        }
+        .mega-dial {
+            width: 320px; height: 320px; margin: 0 auto;
+            border: 20px solid rgba(255, 255, 255, 0.02);
+            border-radius: 50%; display: flex; flex-direction: column; 
+            align-items: center; justify-content: center; position: relative; 
+            cursor: pointer; transition: 0.5s;
+            background: radial-gradient(circle, rgba(255,255,255,0.03) 0%, transparent 70%);
+        }
+        .mega-dial:hover { transform: scale(1.05) rotate(5deg); }
+        .mega-dial::after {
+            content: ''; position: absolute; inset: -20px; 
+            border: 20px solid var(--ring-color); border-radius: 50%; 
+            border-bottom-color: transparent; border-left-color: transparent;
+            transition: 1.5s cubic-bezier(0.34, 1.56, 0.64, 1); 
+            transform: rotate(var(--angle, 320deg));
+            filter: drop-shadow(0 0 30px var(--ring-color));
+            animation: pulse-ring 3s infinite;
+        }
+        @keyframes pulse-ring {
+            0%, 100% { filter: drop-shadow(0 0 30px var(--ring-color)); }
+            50% { filter: drop-shadow(0 0 50px var(--ring-color)); }
+        }
+
+        .dial-icon { 
+            font-size: 48px; margin-bottom: 10px;
+            animation: float 3s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .dial-label { 
+            font-size: 11px; font-weight: 900; color: var(--text-muted); 
+            text-transform: uppercase; letter-spacing: 2px; margin-bottom: 5px;
+        }
+        .dial-value { 
+            font-size: 80px; font-weight: 900; font-family: 'JetBrains Mono'; 
+            color: var(--ring-color); line-height: 1;
+            text-shadow: 0 0 60px var(--ring-color);
+            transition: 0.5s;
+        }
+        .dial-status { 
+            margin-top: 15px; padding: 10px 24px; border-radius: 25px;
+            font-size: 12px; font-weight: 900; text-transform: uppercase;
+            background: var(--ring-color); color: #000; letter-spacing: 1px;
+            box-shadow: 0 4px 20px var(--ring-color);
+        }
+
+        /* Interactive Cards */
+        .info-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%);
+            padding: 28px; border-radius: 24px; border-left: 4px solid var(--blue);
+            margin-top: 20px; font-size: 14px; line-height: 1.8; text-align: left;
+            transition: 0.4s; position: relative; overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+        .info-card::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
+            background: linear-gradient(90deg, transparent, var(--blue), transparent);
+            opacity: 0; transition: 0.3s;
+        }
+        .info-card:hover { 
+            background: rgba(255,255,255,0.06); transform: translateX(8px);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+        .info-card:hover::before { opacity: 1; }
+        
+        .card-icon {
+            font-size: 28px; margin-bottom: 12px; display: block;
+            filter: drop-shadow(0 0 10px currentColor);
+        }
+        .card-title { 
+            font-size: 13px; text-transform: uppercase; color: var(--blue); 
+            margin-bottom: 10px; letter-spacing: 1px; font-weight: 900;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .arabic-text { 
+            font-family: 'Noto Sans Arabic'; font-size: 13px; margin-top: 10px; 
+            display: block; opacity: 0.7; line-height: 2; color: var(--cyan);
+            font-style: italic;
+        }
+
+        /* Control Panel with Neon Effects */
+        .control-panel { 
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(16, 185, 129, 0.08) 100%);
+            padding: 40px; border-radius: 40px; 
+            border: 1px solid var(--border); position: relative; overflow: hidden;
+        }
+        .control-panel::before {
+            content: ''; position: absolute; top: -50%; left: -50%; 
+            width: 200%; height: 200%; 
+            background: radial-gradient(circle, rgba(99, 102, 241, 0.1) 0%, transparent 70%);
+            animation: rotate-gradient 15s linear infinite;
+            pointer-events: none;
+        }
+        @keyframes rotate-gradient {
+            to { transform: rotate(360deg); }
+        }
+
+        .panel-title {
+            font-size: 14px; font-weight: 900; color: var(--purple); 
+            text-transform: uppercase; letter-spacing: 2px; margin-bottom: 30px;
+            display: flex; align-items: center; gap: 10px;
+        }
+        .panel-title::before {
+            content: '🧬'; font-size: 24px;
+        }
+
+        /* Enhanced Sliders */
+        .slider-group { 
+            margin-bottom: 30px; position: relative; z-index: 1;
+            padding: 20px; border-radius: 20px;
+            background: rgba(0,0,0,0.2); backdrop-filter: blur(5px);
+            border: 1px solid rgba(255,255,255,0.05);
+            transition: 0.3s;
+        }
+        .slider-group:hover {
+            background: rgba(0,0,0,0.3);
+            border-color: var(--blue);
+            box-shadow: 0 4px 20px rgba(59, 130, 246, 0.2);
+        }
+        
+        .slider-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 12px;
+        }
+        .slider-label {
+            font-size: 12px; font-weight: 900; color: var(--text-muted);
+            text-transform: uppercase; letter-spacing: 1.5px;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .slider-label::before {
+            content: attr(data-icon); font-size: 20px;
+        }
+        .slider-value {
+            font-family: 'JetBrains Mono'; font-size: 24px; font-weight: 900;
+            color: var(--emerald); text-shadow: 0 0 20px currentColor;
+        }
+
+        .custom-slider { 
+            width: 100%; appearance: none; height: 8px; 
+            background: linear-gradient(90deg, 
+                var(--rose) 0%, 
+                var(--amber) 40%, 
+                var(--emerald) 100%);
+            border-radius: 10px; outline: none; cursor: pointer;
+            transition: 0.3s; position: relative;
+            box-shadow: inset 0 2px 8px rgba(0,0,0,0.3);
+        }
+        .custom-slider:hover { height: 10px; }
+        .custom-slider::-webkit-slider-thumb { 
+            appearance: none; width: 32px; height: 32px; 
+            background: linear-gradient(135deg, #fff, var(--cyan));
+            border-radius: 50%; cursor: grab; 
+            border: 4px solid var(--blue);
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.6),
+                        inset 0 -2px 5px rgba(0,0,0,0.2);
+            transition: 0.2s;
+        }
+        .custom-slider::-webkit-slider-thumb:hover { 
+            transform: scale(1.3); 
+            box-shadow: 0 8px 30px rgba(59, 130, 246, 0.8);
+        }
+        .custom-slider::-webkit-slider-thumb:active { 
+            cursor: grabbing; transform: scale(1.1);
+        }
+
+        .ref-range { 
+            font-size: 10px; font-family: 'JetBrains Mono'; 
+            color: var(--amber); margin-top: 8px; display: flex;
+            align-items: center; gap: 6px; opacity: 0.8;
+        }
+        .ref-range::before { content: '⚠️'; }
+
+        /* Alert Box */
+        .erosion-alert {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.2) 0%, rgba(239, 68, 68, 0.05) 100%);
+            border: 2px solid var(--rose); border-radius: 20px; padding: 25px;
+            margin-top: 25px; animation: alert-pulse 2s infinite;
+            box-shadow: 0 0 30px rgba(239, 68, 68, 0.3);
+        }
+        @keyframes alert-pulse {
+            0%, 100% { box-shadow: 0 0 30px rgba(239, 68, 68, 0.3); }
+            50% { box-shadow: 0 0 50px rgba(239, 68, 68, 0.6); }
+        }
+        .alert-icon {
+            font-size: 40px; margin-bottom: 15px; display: block;
+            animation: shake 0.5s infinite;
+        }
+        @keyframes shake { 
+            0%, 100% { transform: translateX(0) rotate(0deg); } 
+            25% { transform: translateX(-5px) rotate(-5deg); } 
+            75% { transform: translateX(5px) rotate(5deg); } 
+        }
+        .alert-text {
+            font-size: 16px; font-weight: 900; color: var(--rose);
+            text-transform: uppercase; letter-spacing: 1px;
+        }
+
+        /* CTA Button */
+        .btn-mega { 
+            width: 100%; padding: 25px 50px; border-radius: 60px; 
+            border: 2px solid var(--border); 
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(99, 102, 241, 0.2));
+            color: #fff; font-weight: 900; text-transform: uppercase; 
+            cursor: pointer; transition: 0.4s; font-size: 13px; 
+            letter-spacing: 2px; position: relative; overflow: hidden;
+            margin-top: 30px; backdrop-filter: blur(10px);
+        }
+        .btn-mega::before {
+            content: ''; position: absolute; inset: 0; 
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transform: translateX(-100%); transition: 0.6s;
+        }
+        .btn-mega:hover::before { transform: translateX(100%); }
+        .btn-mega:hover { 
+            background: linear-gradient(135deg, var(--blue), var(--indigo));
+            border-color: var(--blue); transform: translateY(-4px);
+            box-shadow: 0 12px 40px rgba(59, 130, 246, 0.5);
+        }
+        .btn-mega span {
+            position: relative; z-index: 1;
+        }
+
+        /* ============ PHASE 2: MIXER ============ */
+        .mixer-layout {
+            display: grid; grid-template-columns: 500px auto 500px; 
+            gap: 40px; width: 100%; max-width: 1600px; align-items: flex-start;
+        }
+
+        .mixer-title {
+            text-align: center; margin-bottom: 40px;
+        }
+        .mixer-title h2 {
+            font-size: 42px; font-weight: 900; letter-spacing: -1px;
+            background: linear-gradient(135deg, #fff, var(--cyan));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+        .mixer-subtitle {
+            font-family: 'Noto Sans Arabic'; font-size: 20px; 
+            color: var(--cyan); opacity: 0.8;
+        }
+
+        .mixer-column { 
+            background: linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%);
+            padding: 45px; border-radius: 40px; border: 1px solid var(--border);
+            backdrop-filter: blur(15px);
+        }
+
+        .biomarker-input {
+            margin-top: 20px; padding: 20px; border-radius: 20px;
+            background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.05);
+            transition: 0.3s; display: flex; justify-content: space-between;
+            align-items: center;
+        }
+        .biomarker-input:hover {
+            background: rgba(0,0,0,0.3); border-color: var(--blue);
+            box-shadow: 0 4px 20px rgba(59, 130, 246, 0.2);
+        }
+        .biomarker-label {
+            font-size: 13px; font-weight: 900; color: var(--text-muted);
+            text-transform: uppercase; letter-spacing: 1px;
+        }
+        .biomarker-label::before {
+            content: attr(data-icon); font-size: 20px; margin-right: 10px;
+        }
+        input[type="number"] { 
+            background: rgba(255,255,255,0.08); border: 2px solid var(--border); 
+            color: #fff; padding: 15px 20px; border-radius: 16px; 
+            font-family: 'JetBrains Mono'; width: 120px; text-align: center; 
+            font-size: 24px; outline: none; transition: 0.3s; font-weight: 900;
+        }
+        input[type="number"]:focus { 
+            border-color: var(--blue); 
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
+            background: rgba(255,255,255,0.12);
+        }
+
+        /* Mixing Animation */
+        .mixer-center {
+            display: flex; flex-direction: column; align-items: center;
+            justify-content: center; text-align: center;
+        }
+        .mixing-orb {
+            width: 200px; height: 200px; border-radius: 50%;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.3), transparent);
+            display: flex; align-items: center; justify-content: center;
+            position: relative; animation: orb-pulse 3s infinite;
+            margin: 30px 0;
+        }
+        @keyframes orb-pulse {
+            0%, 100% { transform: scale(1); box-shadow: 0 0 50px rgba(59, 130, 246, 0.5); }
+            50% { transform: scale(1.1); box-shadow: 0 0 80px rgba(59, 130, 246, 0.8); }
+        }
+        .mixing-symbol { 
+            font-size: 80px; animation: spin 6s linear infinite;
+            filter: drop-shadow(0 0 30px var(--blue));
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .tension-value {
+            font-size: 90px; font-weight: 900; font-family: 'JetBrains Mono';
+            color: var(--emerald); margin: 20px 0;
+            text-shadow: 0 0 60px currentColor; line-height: 1;
+        }
+        .tension-label {
+            font-size: 12px; font-weight: 900; text-transform: uppercase;
+            letter-spacing: 2px; color: var(--text-muted);
+        }
+        .formula-display {
+            margin-top: 20px; padding: 15px; background: rgba(0,0,0,0.3);
+            border-radius: 15px; font-family: 'JetBrains Mono'; font-size: 11px;
+            color: var(--amber); border: 1px solid rgba(245, 158, 11, 0.2);
+        }
+
+        /* Status Badge */
+        .status-badge {
+            padding: 15px 30px; border-radius: 30px; font-size: 13px;
+            font-weight: 900; text-transform: uppercase; letter-spacing: 1.5px;
+            margin: 25px 0; box-shadow: 0 4px 20px currentColor;
+            display: inline-block;
+        }
+
+        /* ============ PHASE 3: INTERACTIVE GRAPH ============ */
+        .graph-container {
+            background: linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%);
+            border-radius: 50px; padding: 60px; width: 100%; max-width: 1300px;
+            border: 1px solid var(--border); backdrop-filter: blur(15px);
+        }
+
+        .graph-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 50px; flex-wrap: wrap; gap: 20px;
+        }
+        .graph-title h2 {
+            font-size: 38px; font-weight: 900; letter-spacing: -1px;
+        }
+        .graph-subtitle {
+            font-family: 'Noto Sans Arabic'; font-size: 18px;
+            color: var(--cyan); margin-top: 8px;
+        }
+
+        .svg-graph { 
+            width: 100%; height: 500px; overflow: visible; 
+            cursor: crosshair; border-radius: 20px;
+            background: rgba(0,0,0,0.2);
+        }
+
+        /* Interactive Marker */
+        .marker-dot { 
+            cursor: grab; transition: 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+            filter: drop-shadow(0 0 30px currentColor);
+        }
+        .marker-dot:hover { 
+            r: 25; cursor: pointer;
+            filter: drop-shadow(0 0 50px currentColor);
+        }
+        .marker-dot:active { cursor: grabbing; }
+
+        /* Zone Cards */
+        .zone-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr);
+            gap: 25px; margin-top: 40px;
+        }
+        .zone-card {
+            padding: 30px; border-radius: 25px; text-align: center;
+            border: 2px solid; transition: 0.4s;
+            background: rgba(0,0,0,0.2); backdrop-filter: blur(10px);
+        }
+        .zone-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+        }
+        .zone-icon {
+            font-size: 48px; margin-bottom: 15px; display: block;
+            filter: drop-shadow(0 0 20px currentColor);
+        }
+        .zone-title {
+            font-size: 16px; font-weight: 900; margin-bottom: 12px;
+            text-transform: uppercase; letter-spacing: 1px;
+        }
+        .zone-desc {
+            font-size: 13px; line-height: 1.7; opacity: 0.9;
+        }
+
+        /* ============ PHASE 4: GANGRENE DEEP DIVE ============ */
+        .gangrene-report {
+            width: 100%; max-width: 1400px;
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            color: #0a0e27; border-radius: 50px; padding: 70px;
+            box-shadow: 0 50px 200px rgba(0,0,0,0.6);
+            border: 3px solid #e2e8f0;
+        }
+
+        .report-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 60px;
+        }
+
+        /* Risk Score Display */
+        .risk-display {
+            text-align: center; padding: 40px;
+            background: linear-gradient(135deg, #fef2f2 0%, #fff 100%);
+            border-radius: 35px; border: 3px solid #fecaca;
+            box-shadow: inset 0 2px 20px rgba(239, 68, 68, 0.1);
+        }
+        .risk-icon {
+            font-size: 80px; margin-bottom: 20px;
+            animation: danger-pulse 2s infinite;
+        }
+        @keyframes danger-pulse {
+            0%, 100% { transform: scale(1); filter: drop-shadow(0 0 20px #ef4444); }
+            50% { transform: scale(1.1); filter: drop-shadow(0 0 40px #ef4444); }
+        }
+        .risk-score {
+            font-size: 120px; font-weight: 900; font-family: 'JetBrains Mono';
+            color: #dc2626; line-height: 1; text-shadow: 0 4px 20px rgba(220, 38, 38, 0.3);
+        }
+        .risk-label {
+            font-size: 14px; font-weight: 900; text-transform: uppercase;
+            color: #991b1b; letter-spacing: 2px; margin-top: 15px;
+        }
+
+        /* Metrics Grid */
+        .metrics-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
+            margin-top: 30px;
+        }
+        .metric-box {
+            padding: 25px; border-radius: 20px; text-align: center;
+            background: #f8fafc; border: 2px solid #e2e8f0;
+            transition: 0.3s;
+        }
+        .metric-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+            border-color: #cbd5e1;
+        }
+        .metric-label {
+            font-size: 11px; color: #64748b; text-transform: uppercase;
+            letter-spacing: 1px; margin-bottom: 10px; font-weight: 800;
+        }
+        .metric-value {
+            font-family: 'JetBrains Mono'; font-size: 36px; font-weight: 900;
+        }
+
+        /* Pathology Section */
+        .pathology-section h3 {
+            font-size: 32px; font-weight: 900; margin-bottom: 20px;
+            color: #0a0e27; display: flex; align-items: center; gap: 15px;
+        }
+        .pathology-section h3::before {
+            content: '⚠️'; font-size: 40px;
+        }
+
+        /* Formula Breakdown */
+        .formula-breakdown {
+            background: #1e293b; color: #fff; padding: 35px;
+            border-radius: 25px; margin: 30px 0;
+            border: 3px solid #334155;
+        }
+        .formula-title {
+            font-size: 14px; font-weight: 900; color: var(--amber);
+            text-transform: uppercase; letter-spacing: 2px;
+            margin-bottom: 20px; display: flex; align-items: center; gap: 10px;
+        }
+        .formula-title::before { content: '🧮'; font-size: 24px; }
+
+        .formula-line {
+            font-family: 'JetBrains Mono'; font-size: 16px;
+            padding: 15px; background: rgba(255,255,255,0.05);
+            border-radius: 12px; margin: 15px 0;
+            border-left: 4px solid var(--cyan);
+            transition: 0.3s;
+        }
+        .formula-line:hover {
+            background: rgba(255,255,255,0.1);
+            transform: translateX(5px);
+        }
+        .formula-var {
+            color: var(--emerald); font-weight: 900;
+        }
+        .formula-result {
+            color: var(--rose); font-weight: 900; font-size: 20px;
+        }
+
+        /* Mechanism Steps */
+        .mechanism-steps {
+            margin: 30px 0;
+        }
+        .step {
+            padding: 25px; margin: 20px 0; border-radius: 20px;
+            background: #f1f5f9; border-left: 5px solid;
+            transition: 0.3s;
+        }
+        .step:hover {
+            transform: translateX(10px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        .step-number {
+            font-size: 32px; font-weight: 900; font-family: 'JetBrains Mono';
+            margin-bottom: 10px; opacity: 0.3;
+        }
+        .step-title {
+            font-size: 16px; font-weight: 900; margin-bottom: 10px;
+            text-transform: uppercase; letter-spacing: 1px;
+        }
+        .step-desc {
+            font-size: 14px; line-height: 1.8; color: #475569;
+        }
+
+        /* Evidence Pills */
+        .evidence-pills {
+            display: flex; flex-wrap: wrap; gap: 15px; margin: 30px 0;
+        }
+        .evidence-pill {
+            padding: 12px 24px; border-radius: 25px;
+            background: linear-gradient(135deg, #dbeafe, #e0e7ff);
+            border: 2px solid #93c5fd; font-size: 11px; font-weight: 900;
+            text-transform: uppercase; letter-spacing: 0.5px;
+            color: #1e40af; transition: 0.3s; cursor: pointer;
+        }
+        .evidence-pill:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.3);
+        }
+
+        /* Regional Context Box */
+        .gcc-context {
+            background: linear-gradient(135deg, #fef3c7 0%, #fef9e7 100%);
+            padding: 35px; border-radius: 25px; margin: 30px 0;
+            border: 3px solid #fbbf24;
+        }
+        .gcc-icon {
+            font-size: 48px; margin-bottom: 15px;
+        }
+        .gcc-title {
+            font-size: 18px; font-weight: 900; color: #92400e;
+            margin-bottom: 15px; text-transform: uppercase;
+        }
+        .gcc-desc {
+            font-size: 14px; line-height: 1.9; color: #78350f;
+        }
+
+        /* Back to Top */
+        .btn-restart {
+            width: 100%; padding: 25px; border-radius: 50px;
+            background: linear-gradient(135deg, var(--indigo), var(--purple));
+            color: #fff; font-size: 14px; font-weight: 900;
+            text-transform: uppercase; letter-spacing: 2px;
+            cursor: pointer; border: none; margin-top: 40px;
+            box-shadow: 0 8px 30px rgba(99, 102, 241, 0.4);
+            transition: 0.4s;
+        }
+        .btn-restart:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 50px rgba(99, 102, 241, 0.6);
+        }
+
+        /* Responsive - Mobile First */
+        @media (max-width: 1400px) {
+            .guardian-grid, .mixer-layout, .report-grid { 
+                grid-template-columns: 1fr; gap: 30px;
+            }
+            .mega-dial { width: 280px; height: 280px; }
+            .dial-value { font-size: 72px; }
+        }
+
+        @media (max-width: 768px) {
+            /* Header mobile */
+            header { 
+                padding: 15px 20px; 
+                flex-direction: column; 
+                gap: 12px;
+                align-items: stretch;
+            }
+            .brand { justify-content: center; }
+            .brand-icon { width: 40px; height: 40px; font-size: 20px; }
+            .brand h1 { font-size: 16px; }
+            .header-stats { 
+                flex-direction: row; 
+                justify-content: space-around; 
+                gap: 10px;
+                flex-wrap: wrap;
+            }
+            .stat-pill { 
+                padding: 8px 15px; 
+                font-size: 10px;
+                flex: 1;
+                min-width: 100px;
+                text-align: center;
+            }
+            .stat-pill span { font-size: 14px; }
+            
+            /* Progress nav mobile */
+            .progress-nav { 
+                top: 120px; 
+                padding: 10px 20px;
+                gap: 8px;
+            }
+            .nav-dot { width: 10px; height: 10px; }
+            .nav-dot.active { width: 30px; }
+            
+            /* Math Engine mobile */
+            div[onclick*="math-note"] {
+                bottom: 15px !important;
+                right: 50% !important;
+                transform: translateX(50%) !important;
+                padding: 12px 18px !important;
+            }
+            #math-note {
+                bottom: 70px !important;
+                right: 10px !important;
+                left: 10px !important;
+                max-width: none !important;
+            }
+            
+            /* Stage mobile */
+            .stage { 
+                padding: 180px 15px 40px 15px; 
+            }
+            
+            /* Dial mobile */
+            .mega-dial { width: 240px; height: 240px; }
+            .dial-value { font-size: 58px; }
+            .dial-icon { font-size: 38px; }
+            
+            /* Cards mobile */
+            .info-card, .mixer-column, .control-panel {
+                padding: 25px 20px;
+                border-radius: 20px;
+            }
+            
+            /* Sliders mobile */
+            .slider-group { padding: 20px 15px; }
+            .slider-value { font-size: 20px; }
+            .custom-slider { height: 12px; }
+            
+            /* Inputs mobile */
+            input[type="number"] {
+                width: 90px;
+                font-size: 20px;
+                padding: 12px 15px;
+            }
+            
+            /* Graph mobile */
+            .trajectory-graph { height: 400px; }
+            svg { max-height: 400px; }
+            
+            /* Zone cards mobile */
+            .zone-grid { 
+                grid-template-columns: 1fr; 
+                gap: 20px;
+            }
+            .zone-card { padding: 25px 20px; }
+            .zone-icon { font-size: 42px; }
+            
+            /* Metrics mobile */
+            .metrics-grid { 
+                grid-template-columns: 1fr; 
+                gap: 15px;
+            }
+            
+            /* Report mobile */
+            .analysis-report { 
+                padding: 40px 20px;
+                border-radius: 30px;
+            }
+            .risk-percentage { font-size: 80px; }
+            .mechanism-step { padding: 20px 15px; }
+            
+            /* Buttons mobile */
+            .btn-phase, .btn-restart {
+                padding: 18px 30px;
+                font-size: 11px;
+            }
+            
+            /* Typography mobile */
+            h2 { font-size: 28px; }
+            h3 { font-size: 22px; }
+            .section-title { font-size: 32px; }
+            
+            /* Touch targets */
+            button, input, select, a {
+                min-height: 44px;
+                min-width: 44px;
+            }
+        }
+        
+        /* Small mobile phones */
+        @media (max-width: 480px) {
+            .mega-dial { width: 200px; height: 200px; }
+            .dial-value { font-size: 48px; }
+            .tension-display { font-size: 52px; }
+            .risk-percentage { font-size: 64px; }
+            
+            .header-stats {
+                flex-direction: column;
+            }
+            .stat-pill {
+                width: 100%;
+            }
+        }
+
+        /* Loading Spinner */
+        .loading {
+            display: inline-block; width: 20px; height: 20px;
+            border: 3px solid rgba(255,255,255,0.1);
+            border-top-color: var(--blue); border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        /* Enhanced Animations */
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
-
-        .text-clinical {
-            font-feature-settings: "tnum";
-            letter-spacing: -0.01em;
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.08); }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
 
-        .audit-bg {
-            background: radial-gradient(circle at top right, #1e293b, #020617);
-        }
+        /* Smooth scroll */
+        html { scroll-behavior: smooth; }
 
-        .logic-card {
-            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-            border: 1px solid rgba(0,0,0,0.04);
+        /* Selection */
+        ::selection {
+            background: var(--blue); color: #fff;
         }
-        .logic-card:hover {
-            transform: translateY(-3px);
-            border-color: rgba(59, 130, 246, 0.4);
-        }
-
-        #root { min-height: 100vh; }
-
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
     </style>
 </head>
 <body>
-    <div id="root"></div>
+    <div class="particle-bg"></div>
 
-    <script type="text/babel">
-        const { useState, useMemo, useEffect, Fragment } = React;
+    <div class="story-canvas">
+        <!-- Enhanced Header -->
+        <header>
+            <div class="brand">
+                <div class="brand-icon">🛡️</div>
+                <div>
+                    <h1>BURAK</h1>
+                    <div style="font-size: 11px; color: var(--text-muted); font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin-top: 3px;">
+                        Al-Mohafiz Deep Dive
+                    </div>
+                    <div class="arabic-sub">محرك رياضي خالص | Zero AI Inference</div>
+                </div>
+            </div>
+            <div class="header-stats">
+                <div class="stat-pill">
+                    Guardian <span id="header-shannon">3.82</span>
+                </div>
+                <div class="stat-pill">
+                    Tension <span id="header-tension">1.0x</span>
+                </div>
+                <button onclick="nextPhase(1)" style="padding: 10px 20px; border-radius: 20px; 
+                        background: rgba(99, 102, 241, 0.15); border: 2px solid var(--indigo);
+                        color: var(--indigo); font-size: 11px; font-weight: 800; 
+                        text-transform: uppercase; letter-spacing: 1px; cursor: pointer;
+                        transition: 0.3s;"
+                        onmouseover="this.style.background='var(--indigo)'; this.style.color='#fff';"
+                        onmouseout="this.style.background='rgba(99, 102, 241, 0.15)'; this.style.color='var(--indigo)';">
+                    ← Back to Start
+                </button>
+            </div>
+        </header>
 
-        // ==================== 1. GLOBAL CONSTANTS ====================
+        <!-- Progress Navigation -->
+        <div class="progress-nav">
+            <div class="nav-dot active" onclick="jumpPhase(1)">
+                <span class="nav-label">🛡️ Guardian</span>
+            </div>
+            <div class="nav-dot" onclick="jumpPhase(2)">
+                <span class="nav-label">🔄 Mixer</span>
+            </div>
+            <div class="nav-dot" onclick="jumpPhase(3)">
+                <span class="nav-label">📈 Trajectory</span>
+            </div>
+            <div class="nav-dot" onclick="jumpPhase(4)">
+                <span class="nav-label">⚠️ Risk Analysis</span>
+            </div>
+        </div>
 
-        const SYSTEM_CATEGORIES = {
-            metabolic: { name: "Energy & Sugar", icon: "Zap", color: "text-blue-600", gradient: "from-blue-600 to-cyan-500" },
-            lipid: { name: "Heart & Blood", icon: "Heart", color: "text-rose-600", gradient: "from-rose-600 to-pink-500" },
-            inflammation: { name: "Immune Balance", icon: "Activity", color: "text-orange-600", gradient: "from-orange-600 to-amber-500" },
-            liver: { name: "Liver Filter", icon: "Droplet", color: "text-emerald-600", gradient: "from-emerald-500 to-teal-500" },
-            kidney: { name: "Kidney Health", icon: "Microscope", color: "text-indigo-600", gradient: "from-indigo-500 to-purple-500" },
-            vitamins: { name: "Nutrient Levels", icon: "ShieldCheck", color: "text-amber-600", gradient: "from-amber-500 to-yellow-500" },
-            hormonal: { name: "Body Signals", icon: "Activity", color: "text-violet-600", gradient: "from-violet-500 to-purple-500" },
-            gut: { name: "Gut Microbiome", icon: "Database", color: "text-cyan-600", gradient: "from-cyan-500 to-blue-500" }
+        <!-- Math Engine Display -->
+        <div style="position: fixed; bottom: 30px; right: 30px; z-index: 2800;
+                    background: rgba(5, 7, 10, 0.95); backdrop-filter: blur(20px);
+                    border: 1px solid var(--border); border-radius: 24px;
+                    padding: 15px 22px; display: flex; align-items: center; gap: 12px;
+                    box-shadow: 0 8px 32px rgba(0,0,0,0.6); cursor: pointer; transition: 0.3s;"
+             onclick="document.getElementById('math-note').style.display = document.getElementById('math-note').style.display === 'none' ? 'block' : 'none';"
+             onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 12px 48px rgba(16, 185, 129, 0.4)';"
+             onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 8px 32px rgba(0,0,0,0.6)';">
+            <div style="width: 32px; height: 32px; border-radius: 8px;
+                        background: linear-gradient(135deg, var(--emerald), var(--cyan));
+                        display: flex; align-items: center; justify-content: center;
+                        font-size: 16px; animation: pulse 2s infinite;">
+                ⚙️
+            </div>
+            <div style="display: flex; flex-direction: column;">
+                <div style="font-size: 9px; color: var(--text-muted); text-transform: uppercase;
+                            letter-spacing: 1.2px; font-weight: 800;">
+                    Math Engine
+                </div>
+                <div style="font-size: 12px; color: var(--emerald); font-weight: 900; font-family: 'JetBrains Mono';">
+                    ACTIVE
+                </div>
+            </div>
+        </div>
+
+        <!-- Math Engine Education Note -->
+        <div id="math-note" style="
+            position: fixed; bottom: 90px; right: 30px; z-index: 2799;
+            background: rgba(5, 7, 10, 0.98); backdrop-filter: blur(25px);
+            border: 2px solid var(--emerald); border-radius: 24px;
+            padding: 24px; max-width: 360px;
+            box-shadow: 0 12px 48px rgba(16, 185, 129, 0.4);
+            font-size: 12px; line-height: 1.9; color: var(--text-primary);
+            display: none; animation: slideUp 0.3s;">
+            <div style="font-weight: 900; color: var(--emerald); margin-bottom: 12px; 
+                        text-transform: uppercase; letter-spacing: 1.5px; font-size: 13px;">
+                🧮 Our Secret Sauce
+            </div>
+            <div style="margin-bottom: 12px;">
+                We use <strong style="color: var(--cyan);">pure mathematics</strong> 
+                (Shannon Entropy, weighted tension formulas) for the heavy lifting.
+            </div>
+            <div style="margin-bottom: 12px;">
+                <strong>AI?</strong> Only for data preprocessing — like a smart 
+                <em style="color: var(--amber);">filing clerk</em> who organizes 
+                papers before the mathematician arrives.
+            </div>
+            <div style="padding: 12px; background: rgba(16, 185, 129, 0.08); 
+                        border-radius: 12px; border-left: 3px solid var(--emerald); margin-bottom: 12px;">
+                <strong style="color: var(--emerald);">Result:</strong><br>
+                • 10x less compute power<br>
+                • 100% transparent results<br>
+                • Zero hallucinations
+            </div>
+            <div style="color: var(--amber); font-weight: 700; font-style: italic; text-align: center;">
+                Math doesn't lie, it calculates.
+            </div>
+            <div style="font-family: 'Noto Sans Arabic'; direction: rtl; text-align: right; 
+                        color: var(--cyan); opacity: 0.9; margin-top: 15px; font-size: 11px; 
+                        padding-top: 15px; border-top: 1px solid var(--border);">
+                نحن نستخدم الرياضيات الخالصة للحسابات الثقيلة. الذكاء الاصطناعي؟ 
+                فقط لتنظيم البيانات - مثل كاتب ذكي ينظم الأوراق قبل وصول عالم الرياضيات.
+            </div>
+        </div>
+
+        <!-- PHASE 1: GUARDIAN -->
+        <section class="stage active" id="phase-1">
+            <div class="guardian-grid">
+                <!-- Left: Dial + Info -->
+                <div>
+                    <div class="mega-dial-container">
+                        <div class="mega-dial" id="mega-dial" title="Your Biological Sovereignty Power">
+                            <div class="dial-icon">🛡️</div>
+                            <div class="dial-label">SOVEREIGNTY INDEX</div>
+                            <div class="dial-value" id="shannon-display">3.82</div>
+                            <div class="dial-status" id="status-badge">PROTECTIVE</div>
+                        </div>
+                    </div>
+
+                    <div class="info-card" style="border-left-color: var(--purple);">
+                        <span class="card-icon">🧬</span>
+                        <div class="card-title">
+                            <span>The Guardian Protocol</span>
+                            <span style="font-family: 'Noto Sans Arabic';">المحافظ</span>
+                        </div>
+                        Think of your gut as a <strong>security system</strong> for your entire body. 
+                        The <strong>Shannon Index (H')</strong> measures how many different "guards" you have on duty.
+                        <br><br>
+                        <strong>Akkermansia</strong> (12%) is your <strong>head of security</strong> 🔐 — 
+                        the glue that keeps your intestinal walls sealed. When this drops below 6%, 
+                        it's like someone cutting your security camera wires — everything else starts failing automatically.
+                        <span class="arabic-text">
+                            أمعائك = نظام أمني. المحافظ يقيس عدد "الحراس" النشطين. 
+                            بكتيريا Akkermansia هي رئيس الأمن (الغراء الحيوي).
+                        </span>
+                    </div>
+
+                    <div class="info-card" style="border-left-color: var(--cyan);">
+                        <span class="card-icon">⚡</span>
+                        <div class="card-title">Why This Matters</div>
+                        Your doctor checks if your blood sugar is high <em>right now</em>. 
+                        We check the <strong>computational load</strong> — how hard your body is working 
+                        behind the scenes to keep those numbers normal.
+                        <br><br>
+                        <strong>High Shannon (H' > 3.5)</strong> = Your body is cruising, minimal effort<br>
+                        <strong>Low Shannon (H' < 2.5)</strong> = Your body is in overdrive, burning out
+                        <span class="arabic-text">
+                            الطبيب يفحص السكر الآن. نحن نفحص جهد جسمك الخفي للحفاظ على التوازن.
+                        </span>
+                    </div>
+
+                    <div class="info-card" style="border-left-color: var(--amber);">
+                        <span class="card-icon">🎮</span>
+                        <div class="card-title">Try This Experiment</div>
+                        Move the <strong>Akkermansia slider</strong> below 6% on the right →
+                        <br><br>
+                        Watch what happens to the other bacteria. They start <em>automatically eroding</em> 
+                        in real-time. This is called <strong>"Cascade Failure"</strong> — 
+                        exactly what happens in your gut over months when the head guard fails.
+                        <span class="arabic-text">
+                            جرّب: حرك مؤشر Akkermansia لأقل من 6٪ وشاهد الانهيار التلقائي.
+                        </span>
+                    </div>
+                </div>
+
+                <!-- Right: Control Panel -->
+                <div class="control-panel">
+                    <div class="panel-title">
+                        🔬 Microbiome Erosion Simulator
+                    </div>
+
+                    <div class="slider-group">
+                        <div class="slider-header">
+                            <div class="slider-label" data-icon="🔐">
+                                The Glue (Akkermansia)
+                            </div>
+                            <div class="slider-value" id="val-akk">12%</div>
+                        </div>
+                        <input type="range" class="custom-slider" id="slider-akk" 
+                               min="1" max="25" value="12" oninput="handleSlider()">
+                        <div class="ref-range">Critical: Must stay > 6% (Your security gate)</div>
+                        
+                        <div style="margin-top: 12px; padding: 12px; background: rgba(245, 158, 11, 0.08); 
+                                    border-left: 3px solid var(--amber); border-radius: 8px; font-size: 11px; 
+                                    line-height: 1.7; color: var(--text-primary);">
+                            <strong style="color: var(--amber);">⚠️ Educational Note:</strong> 
+                            When Akkermansia drops below 6%, the <strong>cascade effect</strong> begins. 
+                            Other protective species (Faecalibacterium, Bacteroides) start declining automatically. 
+                            This models real-world <em>barrier dysfunction</em> — when the gut lining weakens, 
+                            the entire ecosystem collapses. Watch your Guardian Index (Shannon) plummet 
+                            from ~3.5 → ~2.0 within seconds. This simulates a <strong>multi-month deterioration 
+                            compressed into real-time</strong>. Color coding: 🟢 Green (H' ≥ 3.2 protective), 
+                            🟡 Amber (H' 2.2-3.2 eroding), 🔴 Red (H' < 2.2 collapsed).
+                        </div>
+                    </div>
+
+                    <div class="slider-group">
+                        <div class="slider-header">
+                            <div class="slider-label" data-icon="💚">
+                                The Healer (Faecalibacterium)
+                            </div>
+                            <div class="slider-value" id="val-fae">12%</div>
+                        </div>
+                        <input type="range" class="custom-slider" id="slider-fae" 
+                               min="1" max="25" value="12" oninput="calcShannon()">
+                        <div class="ref-range">Role: Makes butyrate — your gut's repair molecule</div>
+                    </div>
+
+                    <div class="slider-group">
+                        <div class="slider-header">
+                            <div class="slider-label" data-icon="🔥">
+                                The Burner (Bacteroides)
+                            </div>
+                            <div class="slider-value" id="val-bac">30%</div>
+                        </div>
+                        <input type="range" class="custom-slider" id="slider-bac" 
+                               min="10" max="50" value="30" oninput="calcShannon()">
+                        <div class="ref-range">Role: Breaks down fats & complex sugars for energy</div>
+                    </div>
+
+                    <div id="alert-box" class="erosion-alert" style="display:none;">
+                        <span class="alert-icon">🚨</span>
+                        <div class="alert-text">
+                            SECURITY BREACH DETECTED
+                        </div>
+                        <div style="margin-top: 10px; font-size: 13px; font-weight: 600;">
+                            Akkermansia below 6% → Automatic cascade failure active
+                        </div>
+                        <span class="arabic-text" style="margin-top: 10px;">
+                            اختراق أمني: انهيار تلقائي نشط
+                        </span>
+                    </div>
+
+                    <button class="btn-mega" onclick="nextPhase(2)">
+                        <span>🔄 Enter Handshake Mixer → مزج المصافحة</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- PHASE 2: MIXER -->
+        <section class="stage" id="phase-2">
+            <div class="mixer-title">
+                <h2>⚗️ The Clinical Handshake</h2>
+                <div class="mixer-subtitle">بروتوكول المصافحة بين المحافظ والدم</div>
+            </div>
+
+            <div class="mixer-layout">
+                <!-- Left: Blood Markers -->
+                <div class="mixer-column">
+                    <div class="panel-title">🩸 Your Blood Numbers</div>
+                    
+                    <div class="biomarker-input">
+                        <div>
+                            <div class="biomarker-label" data-icon="💉">Fasting Insulin</div>
+                            <div class="ref-range">Normal: 2-25 μIU/mL</div>
+                        </div>
+                        <input type="number" id="input-insulin" value="4.2" step="0.1" oninput="mixHandshake()">
+                    </div>
+
+                    <div class="biomarker-input">
+                        <div>
+                            <div class="biomarker-label" data-icon="🔥">CRP (Inflammation)</div>
+                            <div class="ref-range">Good: < 1.0 mg/L</div>
+                        </div>
+                        <input type="number" id="input-crp" value="0.4" step="0.1" oninput="mixHandshake()">
+                    </div>
+
+                    <div class="biomarker-input">
+                        <div>
+                            <div class="biomarker-label" data-icon="🍬">Blood Sugar</div>
+                            <div class="ref-range">Normal: 70-99 mg/dL</div>
+                        </div>
+                        <input type="number" id="input-glucose" value="88" oninput="mixHandshake()">
+                    </div>
+
+                    <div class="biomarker-input">
+                        <div>
+                            <div class="biomarker-label" data-icon="🧈">Triglycerides</div>
+                            <div class="ref-range">Good: < 150 mg/dL</div>
+                        </div>
+                        <input type="number" id="input-trig" value="110" oninput="mixHandshake()">
+                    </div>
+
+                    <div class="info-card" style="border-left-color: var(--cyan); margin-top: 30px;">
+                        <span class="card-icon">💡</span>
+                        <div class="card-title">Try This</div>
+                        Set insulin to <strong>15</strong> (high) while keeping Shannon at 3.82 (good). 
+                        You'll see <strong>"Exhaustion"</strong> — your gut is working overtime to save you.
+                    </div>
+                </div>
+
+                <!-- Center: Mixing -->
+                <div class="mixer-center">
+                    <div style="font-size: 13px; font-weight: 900; color: var(--text-muted); 
+                                text-transform: uppercase; letter-spacing: 2px;">
+                        Guardian Power
+                    </div>
+                    <div style="font-family: 'JetBrains Mono'; font-size: 32px; 
+                                font-weight: 900; color: var(--purple); margin: 10px 0;">
+                        <span id="mixer-shannon">3.82</span>
+                    </div>
+
+                    <div class="mixing-orb">
+                        <div class="mixing-symbol">⊗</div>
+                    </div>
+
+                    <div class="tension-value" id="tension-display">1.0x</div>
+                    <div class="tension-label">⚡ HANDSHAKE TENSION</div>
+
+                    <div class="formula-display">
+                        T = [Insulin × (CRP + 0.6) + TG/100 + Glc/100] / H'
+                    </div>
+                </div>
+
+                <!-- Right: Verdict -->
+                <div class="mixer-column">
+                    <div class="panel-title">🎯 Status Report</div>
+                    
+                    <div class="status-badge" id="verdict-badge" 
+                         style="background: var(--emerald); color: #000;">
+                        SOVEREIGN
+                    </div>
+
+                    <div class="info-card" id="verdict-card" style="border-left-color: var(--emerald);">
+                        <div class="card-title" id="verdict-title">✓ Perfect Sovereignty</div>
+                        <p id="verdict-desc" style="margin-top: 10px; font-size: 13px;">
+                            Your Guardian and blood markers are in perfect sync. 
+                            No metabolic stress detected. System is sustainable.
+                        </p>
+                        <span class="arabic-text" id="verdict-arabic">
+                            تناغم مثالي بين المحافظ ومؤشرات الدم. نظام مستدام.
+                        </span>
+                    </div>
+
+                    <div class="info-card" style="border-left-color: var(--rose); margin-top: 20px;">
+                        <span class="card-icon">⚠️</span>
+                        <div class="card-title">The Double Hit Danger</div>
+                        <strong>Scenario 1:</strong> Bad gut + bad blood = Everyone knows you're sick<br>
+                        <strong>Scenario 2:</strong> Good gut + bad blood = Your gut is exhausted compensating<br>
+                        <strong>Scenario 3:</strong> Bad gut + "normal" blood = <span style="color: var(--rose); font-weight: 900;">
+                            SILENT KILLER ☠️
+                        </span>
+                        <br><br>
+                        Doctors miss #3 because they only check blood. We catch it.
+                        <span class="arabic-text">
+                            الأمعاء السيئة + تحاليل "طبيعية" = القاتل الصامت الذي يتجاهله الأطباء
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn-mega" onclick="nextPhase(3)" style="margin-top: 50px;">
+                <span>📈 View Your 20-Year Trajectory → رؤية المستقبل</span>
+            </button>
+        </section>
+
+        <!-- PHASE 3: INTERACTIVE GRAPH -->
+        <section class="stage" id="phase-3">
+            <div class="graph-container">
+                <div class="graph-header">
+                    <div class="graph-title">
+                        <h2>📊 Your 20-Year Biological Debt</h2>
+                        <div class="graph-subtitle">التنبؤ الحسابي لمدة عشرين عاماً</div>
+                    </div>
+                    <div class="status-badge" id="graph-zone-badge" 
+                         style="background: var(--emerald); color: #000;">
+                        🛡️ SOVEREIGN ZONE
+                    </div>
+                </div>
+
+                <svg class="svg-graph" id="trajectory-svg" viewBox="0 0 900 500">
+                    <!-- Grid Lines -->
+                    <defs>
+                        <pattern id="grid" width="50" height="50" patternUnits="userSpaceOnUse">
+                            <path d="M 50 0 L 0 0 0 50" fill="none" stroke="rgba(255,255,255,0.03)" stroke-width="1"/>
+                        </pattern>
+                    </defs>
+                    <rect width="900" height="500" fill="url(#grid)" />
+
+                    <!-- Baseline -->
+                    <line x1="0" y1="450" x2="900" y2="450" stroke="rgba(255,255,255,0.1)" 
+                          stroke-width="2" stroke-dasharray="10,5"></line>
+                    
+                    <!-- Trajectory Curve -->
+                    <path id="trajectory-path" fill="none" stroke="rgba(255,255,255,0.08)" 
+                          stroke-width="10" d="M 0 450 Q 225 450, 450 250 T 900 50" opacity="0.6"></path>
+                    
+                    <!-- Your Position -->
+                    <circle id="your-dot" class="marker-dot" cx="150" cy="420" r="20" 
+                            fill="currentColor" stroke="rgba(0,0,0,0.4)" stroke-width="4"
+                            style="color: var(--emerald);"></circle>
+                    
+                    <!-- Label -->
+                    <text id="dot-label" x="180" y="410" 
+                          style="fill:#fff; font-size:22px; font-weight:900; font-family:'JetBrains Mono';">
+                        YOU: 1.0x
+                    </text>
+
+                    <!-- Zone Backgrounds -->
+                    <rect x="0" y="0" width="300" height="500" fill="rgba(16, 185, 129, 0.08)" rx="20"></rect>
+                    <text x="100" y="485" style="fill:var(--emerald); font-size:13px; font-weight:900;">
+                        ✓ SOVEREIGN
+                    </text>
+
+                    <rect x="300" y="0" width="300" height="500" fill="rgba(245, 158, 11, 0.08)" rx="20"></rect>
+                    <text x="410" y="485" style="fill:var(--amber); font-size:13px; font-weight:900;">
+                        ⚠️ DRIFT
+                    </text>
+
+                    <rect x="600" y="0" width="300" height="500" fill="rgba(239, 68, 68, 0.08)" rx="20"></rect>
+                    <text x="720" y="485" style="fill:var(--rose); font-size:13px; font-weight:900;">
+                        ☠️ FAILURE
+                    </text>
+
+                    <!-- Axis Labels -->
+                    <text x="10" y="30" style="fill:var(--text-muted); font-size:12px; font-weight:800;">
+                        High Risk
+                    </text>
+                    <text x="10" y="490" style="fill:var(--text-muted); font-size:12px; font-weight:800;">
+                        Low Risk
+                    </text>
+                    <text x="850" y="490" style="fill:var(--text-muted); font-size:12px; font-weight:800;">
+                        20 Years →
+                    </text>
+                </svg>
+
+                <div class="zone-grid">
+                    <div class="zone-card" style="border-color: var(--emerald);">
+                        <span class="zone-icon" style="color: var(--emerald);">🛡️</span>
+                        <div class="zone-title" style="color: var(--emerald);">Sovereign Zone</div>
+                        <div class="zone-desc">
+                            <strong>T < 2.0</strong><br>
+                            Your body's math is working <em>for you</em>, not against you. 
+                            Minimal computational load. Sustainable for decades. 
+                            The preventative window is wide open.
+                        </div>
+                    </div>
+
+                    <div class="zone-card" style="border-color: var(--amber);">
+                        <span class="zone-icon" style="color: var(--amber);">⚠️</span>
+                        <div class="zone-title" style="color: var(--amber);">Metabolic Drift</div>
+                        <div class="zone-desc">
+                            <strong>T: 2.0-4.0</strong><br>
+                            Your Guardian is losing its grip on the metabolic gates. 
+                            Vascular damage starting. Intervention window narrowing fast. 
+                            This is the "pre-disease" zone doctors miss.
+                        </div>
+                    </div>
+
+                    <div class="zone-card" style="border-color: var(--rose);">
+                        <span class="zone-icon" style="color: var(--rose);">☠️</span>
+                        <div class="zone-title" style="color: var(--rose);">Failure Zone</div>
+                        <div class="zone-desc">
+                            <strong>T > 4.0</strong><br>
+                            Structural tissue damage is <em>active</em>. 
+                            Nerve endings dying from oxygen starvation. 
+                            High necrotic risk. Emergency intervention required now.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-card" style="border-left-color: var(--purple); margin-top: 40px;">
+                    <span class="card-icon">🧠</span>
+                    <div class="card-title">What This Graph Actually Means</div>
+                    Your dot's position = the <strong>computational burden</strong> your microbiome carries 
+                    to keep you metabolically stable.<br><br>
+                    
+                    <strong>Think of it like this:</strong><br>
+                    • <strong>Left side (Sovereign):</strong> Your body is on cruise control, using 20% CPU<br>
+                    • <strong>Middle (Drift):</strong> Your body is at 80% CPU, starting to lag<br>
+                    • <strong>Right side (Failure):</strong> Your body crashed — the blue screen of death
+                    
+                    <span class="arabic-text" style="margin-top: 15px;">
+                        موقع النقطة = الحمل الحسابي الذي تحمله أمعائك للحفاظ على الاستقرار الأيضي.
+                        اليسار = مستدام. الوسط = متدهور. اليمين = منهار.
+                    </span>
+                </div>
+            </div>
+
+            <button class="btn-mega" onclick="nextPhase(4)" style="margin-top: 50px;">
+                <span>⚠️ Deep Dive: Gangrene Risk Analysis → التحليل العميق</span>
+            </button>
+        </section>
+
+        <!-- PHASE 4: GANGRENE DEEP DIVE -->
+        <section class="stage" id="phase-4">
+            <div class="gangrene-report">
+                <div class="report-grid">
+                    <!-- Left: Risk Score -->
+                    <div>
+                        <div class="risk-display">
+                            <div class="risk-icon">⚠️</div>
+                            <div class="risk-score" id="final-risk">18%</div>
+                            <div class="risk-label">20-YEAR GANGRENE PROBABILITY</div>
+                        </div>
+
+                        <div class="metrics-grid">
+                            <div class="metric-box">
+                                <div class="metric-label">🫀 Nerve Oxygen</div>
+                                <div class="metric-value" id="metric-oxygen" style="color: var(--emerald);">
+                                    98%
+                                </div>
+                            </div>
+                            <div class="metric-box">
+                                <div class="metric-label">⚡ Your Tension</div>
+                                <div class="metric-value" id="metric-tension" style="color: var(--blue);">
+                                    1.0x
+                                </div>
+                            </div>
+                            <div class="metric-box">
+                                <div class="metric-label">🛡️ Guardian Power</div>
+                                <div class="metric-value" id="metric-shannon" style="color: var(--purple);">
+                                    3.82
+                                </div>
+                            </div>
+                            <div class="metric-box">
+                                <div class="metric-label">📊 Status</div>
+                                <div class="metric-value" id="metric-status" style="font-size: 20px; color: var(--emerald);">
+                                    SAFE
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="gcc-context">
+                            <div class="gcc-icon">🌍</div>
+                            <div class="gcc-title">🔥 Why GCC is Different</div>
+                            <div class="gcc-desc">
+                                <strong>Ambient heat (45°C+)</strong> + <strong>High date/sugar diet</strong> = 
+                                Accelerated glycation of blood vessels (think of it like caramelizing sugar in a pan).
+                                <br><br>
+                                When your Guardian (Akkermansia) is weak, this process happens <strong>3x faster</strong> 
+                                in GCC populations. Your nerves start dying silently from oxygen starvation.
+                                <br><br>
+                                <em>Source: Middle East Journal of Internal Medicine, 2023</em>
+                            </div>
+                            <span class="arabic-text">
+                                الحرارة + السكريات الزائدة = تسريع تلف الأوعية الدموية 3 أضعاف عند ضعف المحافظ
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Right: Mechanism -->
+                    <div class="pathology-section">
+                        <h3>How Gangrene Actually Starts</h3>
+                        <p style="font-size: 14px; line-height: 1.8; color: #475569; margin-bottom: 30px;">
+                            It's not sudden. It's a slow, mathematical process. Here's the <strong>exact mechanism</strong>:
+                        </p>
+
+                        <div class="formula-breakdown">
+                            <div class="formula-title">🧮 The Math Behind Your Risk</div>
+                            
+                            <div class="formula-line">
+                                <span class="formula-var">Step 1:</span> Handshake Tension (T) = 
+                                [<span id="calc-insulin">4.2</span> × (<span id="calc-crp">0.4</span> + 0.6) + 
+                                <span id="calc-trig">110</span>/100 + <span id="calc-glc">88</span>/100] / 
+                                <span id="calc-shannon">3.82</span>
+                            </div>
+                            
+                            <div class="formula-line">
+                                <span class="formula-var">Step 2:</span> T = <span class="formula-result" id="calc-result">1.0x</span>
+                            </div>
+                            
+                            <div class="formula-line">
+                                <span class="formula-var">Step 3:</span> Gangrene Risk = T × 18% = 
+                                <span class="formula-result" id="calc-final-risk">18%</span> over 20 years
+                            </div>
+
+                            <div style="margin-top: 20px; font-size: 12px; color: var(--text-muted); 
+                                        padding: 15px; background: rgba(255,255,255,0.03); border-radius: 10px;">
+                                💡 <strong>What this means:</strong> For every 1.0 increase in Tension, 
+                                your 20-year gangrene risk increases by ~18%. At T=4.0, you're at 72% probability.
+                            </div>
+                        </div>
+
+                        <div class="mechanism-steps">
+                            <div class="step" style="border-left-color: var(--amber);">
+                                <div class="step-number">01</div>
+                                <div class="step-title" style="color: var(--amber);">
+                                    🔥 Chronic Inflammation (High CRP)
+                                </div>
+                                <div class="step-desc">
+                                    Your blood vessels are under constant inflammatory attack. 
+                                    Think of it like acid slowly dissolving the pipes in your house.
+                                </div>
+                            </div>
+
+                            <div class="step" style="border-left-color: var(--rose);">
+                                <div class="step-number">02</div>
+                                <div class="step-title" style="color: var(--rose);">
+                                    🩸 Microvascular Rarefaction
+                                </div>
+                                <div class="step-desc">
+                                    Your smallest blood vessels (capillaries) start disappearing. 
+                                    Fewer vessels = less oxygen delivery to nerve endings in your feet and hands.
+                                </div>
+                            </div>
+
+                            <div class="step" style="border-left-color: var(--purple);">
+                                <div class="step-number">03</div>
+                                <div class="step-title" style="color: var(--purple);">
+                                    💀 Silent Nerve Death (Neuropathy)
+                                </div>
+                                <div class="step-desc">
+                                    Your nerves suffocate slowly. First you lose sensation (numbness). 
+                                    Then comes pain. Then tissue death. This takes <strong>5-15 years</strong> 
+                                    of high Tension — completely silent until it's too late.
+                                </div>
+                            </div>
+
+                            <div class="step" style="border-left-color: #000;">
+                                <div class="step-number">04</div>
+                                <div class="step-title">
+                                    ☠️ Tissue Necrosis (Gangrene)
+                                </div>
+                                <div class="step-desc">
+                                    Dead nerves + poor circulation = tissue death. 
+                                    A small cut that won't heal becomes infected. Infection spreads. 
+                                    Result: <strong>Amputation</strong>. This is the <em>mathematical endpoint</em> 
+                                    of uncontrolled high Tension.
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="evidence-pills">
+                            <div class="evidence-pill">📄 Nature Metabolism 2023</div>
+                            <div class="evidence-pill">📄 Cell Reports Med 2022</div>
+                            <div class="evidence-pill">📄 Lancet Diabetes 2024</div>
+                            <div class="evidence-pill">📄 J. Clin. Invest. 2024</div>
+                            <div class="evidence-pill">📄 MEJIM 2023 (GCC Study)</div>
+                        </div>
+
+                        <div class="info-card" style="border-left-color: var(--cyan); 
+                                                     background: #e0f2fe; margin-top: 30px;">
+                            <span class="card-icon" style="color: var(--cyan);">💊</span>
+                            <div class="card-title" style="color: #0c4a6e;">The Good News</div>
+                            <div style="color: #075985; font-size: 14px; line-height: 1.8;">
+                                This is <strong>100% preventable</strong> if caught early (T < 2.0). 
+                                The interventions are simple:<br><br>
+                                
+                                • <strong>Boost Akkermansia:</strong> Polyphenols (berries, green tea), 
+                                  omega-3s, intermittent fasting<br>
+                                • <strong>Lower inflammation:</strong> Remove processed foods, 
+                                  improve sleep, manage stress<br>
+                                • <strong>Optimize insulin:</strong> Resistance training, 
+                                  reduce refined carbs<br><br>
+                                
+                                The window is open. The math can be reversed. But you have to act <em>before</em> 
+                                your labs look bad.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer style="padding: 30px; text-align: center; opacity: 0.7; 
+                       font-size: 11px; font-family: 'JetBrains Mono'; 
+                       letter-spacing: 1px; margin-top: 50px;">
+            🛡️ AL-MOHAFIZ | BURAK CORE SYSTEM | REGION: GCC<br>
+            <span style="color: var(--amber); font-weight: 700; margin-top: 8px; display: inline-block;">
+                Developed by Waseem Ahanger
+            </span>
+        </footer>
+    </div>
+
+    <script>
+        // State
+        let shannon = 3.82;
+        let tension = 1.0;
+        let currentPhase = 1;
+        let erosionTimer = null;
+
+        // Phase Navigation
+        function nextPhase(p) {
+            currentPhase = p;
+            updatePhaseUI(p);
+        }
+
+        function jumpPhase(p) {
+            if (p <= currentPhase || p === 1) {
+                currentPhase = p;
+                updatePhaseUI(p);
+            }
+        }
+
+        function updatePhaseUI(p) {
+            // Update stages
+            document.querySelectorAll('.stage').forEach(s => s.classList.remove('active'));
+            document.getElementById(`phase-${p}`).classList.add('active');
+            
+            // Update dots
+            document.querySelectorAll('.nav-dot').forEach((d, i) => {
+                d.classList.toggle('active', i === p - 1);
+            });
+            
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            
+            // Execute phase-specific updates
+            if (p === 2) mixHandshake();
+            if (p === 3) updateGraph();
+            if (p === 4) generateReport();
+        }
+
+        // Shannon Calculation
+        function calcShannon() {
+            const akk = parseInt(document.getElementById('slider-akk').value) / 100;
+            const fae = parseInt(document.getElementById('slider-fae').value) / 100;
+            const bac = parseInt(document.getElementById('slider-bac').value) / 100;
+            const other = Math.max(0.01, 1 - (akk + fae + bac));
+            
+            const entropy = -(akk * Math.log(akk) + fae * Math.log(fae) + 
+                             bac * Math.log(bac) + other * Math.log(other));
+            shannon = (entropy * 3.2).toFixed(2);
+            
+            updateShannonUI();
+        }
+
+        function updateShannonUI() {
+            // Update dial
+            document.getElementById('shannon-display').innerText = shannon;
+            document.getElementById('header-shannon').innerText = shannon;
+            document.getElementById('mixer-shannon').innerText = shannon;
+            
+            // Update angle
+            const angle = (parseFloat(shannon) / 5) * 360;
+            document.getElementById('mega-dial').style.setProperty('--angle', `${angle}deg`);
+            
+            // Update color
+            let color = 'var(--emerald)';
+            let status = 'PROTECTIVE';
+            if (shannon < 2.2) { color = 'var(--rose)'; status = 'COLLAPSED'; }
+            else if (shannon < 3.2) { color = 'var(--amber)'; status = 'ERODING'; }
+            
+            
+            document.documentElement.style.setProperty('--ring-color', color);
+            document.getElementById('status-badge').innerText = status;
+            document.getElementById('status-badge').style.background = color;
+            
+            // Update header Shannon color
+            const shannonEl = document.getElementById('header-shannon');
+            if (shannonEl) {
+                shannonEl.style.color = color;
+            } else {
+                console.error('header-shannon element not found!');
+            }
+        }
+
+        // Slider Handler
+        function handleSlider() {
+            const akk = parseInt(document.getElementById('slider-akk').value);
+            const isBreached = akk < 6;
+            
+            // Update value display
+            document.getElementById('val-akk').innerText = akk + '%';
+            
+            // Show/hide alert
+            document.getElementById('alert-box').style.display = isBreached ? 'block' : 'none';
+            
+            // Handle erosion - FASTER for testing
+            if (isBreached && !erosionTimer) {
+                erosionTimer = setInterval(() => {
+                    const currentAkk = parseInt(document.getElementById('slider-akk').value);
+                    if (currentAkk < 6) {
+                        const faeSlider = document.getElementById('slider-fae');
+                        const bacSlider = document.getElementById('slider-bac');
+                        
+                        // Faster erosion: 1.0 instead of 0.2
+                        faeSlider.value = Math.max(1, parseFloat(faeSlider.value) - 1.0);
+                        bacSlider.value = Math.max(10, parseFloat(bacSlider.value) - 1.0);
+                        
+                        document.getElementById('val-fae').innerText = Math.round(faeSlider.value) + '%';
+                        document.getElementById('val-bac').innerText = Math.round(bacSlider.value) + '%';
+                        
+                        calcShannon();
+                    } else {
+                        clearInterval(erosionTimer);
+                        erosionTimer = null;
+                    }
+                }, 100);
+            } else if (!isBreached && erosionTimer) {
+                clearInterval(erosionTimer);
+                erosionTimer = null;
+            }
+            
+            calcShannon();
+        }
+        
+        // TEST FUNCTION - Force Shannon to specific value
+        window.testShannon = function(value) {
+            shannon = value;
+            updateShannonUI();
+        }
+        
+        // TEST FUNCTION - Force Tension to specific value  
+        window.testTension = function(value) {
+            tension = value;
+            const tensionEl = document.getElementById('header-tension');
+            tensionEl.innerText = tension + 'x';
+            document.getElementById('tension-display').innerText = tension + 'x';
+            
+            let tensionColor;
+            if (tension < 2) {
+                tensionColor = 'var(--emerald)';
+            } else if (tension < 4) {
+                tensionColor = 'var(--amber)';
+            } else {
+                tensionColor = 'var(--rose)';
+            }
+            tensionEl.style.color = tensionColor;
+            document.getElementById('tension-display').style.color = tensionColor;
+        }
+
+        // Update other sliders
+        document.getElementById('slider-fae').addEventListener('input', (e) => {
+            document.getElementById('val-fae').innerText = e.target.value + '%';
+            calcShannon();
+        });
+        document.getElementById('slider-bac').addEventListener('input', (e) => {
+            document.getElementById('val-bac').innerText = e.target.value + '%';
+            calcShannon();
+        });
+
+        // Handshake Mixer
+        function mixHandshake() {
+            const ins = parseFloat(document.getElementById('input-insulin').value) || 0;
+            const crp = parseFloat(document.getElementById('input-crp').value) || 0;
+            const trig = parseFloat(document.getElementById('input-trig').value) || 0;
+            const glc = parseFloat(document.getElementById('input-glucose').value) || 0;
+            
+            tension = (((ins * (crp + 0.6)) + (trig / 100) + (glc / 100)) / parseFloat(shannon)).toFixed(2);
+            
+            
+            // Update displays
+            document.getElementById('tension-display').innerText = tension + 'x';
+            const tensionEl = document.getElementById('header-tension');
+            tensionEl.innerText = tension + 'x';
+            
+            // Dynamic tension color based on value
+            let tensionColor;
+            if (tension < 2) {
+                tensionColor = 'var(--emerald)';
+                tensionEl.style.color = tensionColor;
+                document.getElementById('tension-display').style.color = tensionColor;
+            } else if (tension < 4) {
+                tensionColor = 'var(--amber)';
+                tensionEl.style.color = tensionColor;
+                document.getElementById('tension-display').style.color = tensionColor;
+            } else {
+                tensionColor = 'var(--rose)';
+                tensionEl.style.color = tensionColor;
+                document.getElementById('tension-display').style.color = tensionColor;
+            }
+            
+            
+            // Update verdict
+            updateVerdict();
+        }
+
+        function updateVerdict() {
+            const badge = document.getElementById('verdict-badge');
+            const title = document.getElementById('verdict-title');
+            const desc = document.getElementById('verdict-desc');
+            const arabic = document.getElementById('verdict-arabic');
+            const card = document.getElementById('verdict-card');
+            
+            if (tension < 1.8) {
+                badge.style.background = 'var(--emerald)';
+                badge.style.color = '#000';
+                badge.innerText = '✓ SOVEREIGN';
+                title.innerText = '✓ Perfect Sovereignty';
+                desc.innerText = 'Your Guardian and blood markers are in perfect sync. No metabolic stress detected. System is sustainable for decades. Keep doing what you\'re doing.';
+                arabic.innerText = 'تناغم مثالي. نظام مستدام. استمر على نفس النهج.';
+                card.style.borderLeftColor = 'var(--emerald)';
+            } else if (parseFloat(shannon) > 3.2 && tension > 2.5) {
+                badge.style.background = 'var(--amber)';
+                badge.style.color = '#000';
+                badge.innerText = '⚡ EXHAUSTION';
+                title.innerText = '⚡ Metabolic Exhaustion';
+                desc.innerText = 'Your gut diversity is good, but your blood markers are elevated. This means your Guardian is working overtime to compensate for systemic dysfunction. It\'s like running your car engine at 8000 RPM on the highway — it works, but you\'re burning out.';
+                arabic.innerText = 'أمعاء جيدة لكن مؤشرات سيئة. المحافظ يعمل بجهد زائد وسينهار قريباً.';
+                card.style.borderLeftColor = 'var(--amber)';
+            } else if (parseFloat(shannon) < 2.5 && tension < 2.5) {
+                badge.style.background = 'var(--amber)';
+                badge.style.color = '#000';
+                badge.innerText = '🔇 SILENT DRIFT';
+                title.innerText = '🔇 Silent Metabolic Drift';
+                desc.innerText = 'DANGER ZONE: Your blood markers look "okay" but your Guardian is weak. Your body is hiding damage through compensatory mechanisms. This is the silent killer doctors miss — normal labs, collapsing foundation.';
+                arabic.innerText = 'منطقة خطر: المؤشرات تبدو طبيعية لكن المحافظ ضعيف. خطر صامت مخفي.';
+                card.style.borderLeftColor = 'var(--amber)';
+            } else {
+                badge.style.background = 'var(--rose)';
+                badge.style.color = '#fff';
+                badge.innerText = '☠️ CRITICAL';
+                title.innerText = '☠️ Metabolic Insolvency';
+                desc.innerText = 'RED ALERT: Guardian collapse + elevated inflammatory markers. Your body has run out of compensatory mechanisms. System failure is imminent. This is the pathway to diabetic complications, neuropathy, and gangrene. Immediate intervention required.';
+                arabic.innerText = 'إنذار أحمر: انهيار المحافظ مع ارتفاع الالتهاب. فشل نظامي وشيك.';
+                card.style.borderLeftColor = 'var(--rose)';
+            }
+            
+            // Update tension color
+            const tensionEl = document.getElementById('tension-display');
+            if (tension < 2) tensionEl.style.color = 'var(--emerald)';
+            else if (tension < 4) tensionEl.style.color = 'var(--amber)';
+            else tensionEl.style.color = 'var(--rose)';
+        }
+
+        // Graph Update
+        function updateGraph() {
+            const dot = document.getElementById('your-dot');
+            const label = document.getElementById('dot-label');
+            const badge = document.getElementById('graph-zone-badge');
+            
+            // Calculate position
+            const x = Math.min(880, parseFloat(tension) * 150);
+            const y = 450 - (Math.pow(parseFloat(tension), 1.6) * 35);
+            
+            // Update position
+            dot.setAttribute('cx', x);
+            dot.setAttribute('cy', y);
+            label.setAttribute('x', x + 30);
+            label.setAttribute('y', y - 10);
+            label.textContent = `YOU: ${tension}x`;
+            
+            // Update color and zone
+            let color = 'var(--emerald)';
+            let zoneText = '🛡️ SOVEREIGN ZONE';
+            
+            if (tension < 2) {
+                color = 'var(--emerald)';
+                badge.style.background = 'var(--emerald)';
+                badge.style.color = '#000';
+            } else if (tension < 4) {
+                color = 'var(--amber)';
+                zoneText = '⚠️ DRIFT ZONE';
+                badge.style.background = 'var(--amber)';
+                badge.style.color = '#000';
+            } else {
+                color = 'var(--rose)';
+                zoneText = '☠️ FAILURE ZONE';
+                badge.style.background = 'var(--rose)';
+                badge.style.color = '#fff';
+            }
+            
+            badge.innerText = zoneText;
+            dot.style.color = color;
+        }
+
+        // Generate Report
+        function generateReport() {
+            const risk = Math.min(99, parseFloat(tension) * 18).toFixed(0);
+            
+            // Update risk score
+            document.getElementById('final-risk').innerText = risk + '%';
+            
+            // Update metrics
+            const oxygenation = tension > 2 ? Math.max(0, 100 - (risk * 0.65)).toFixed(0) : 100;
+            document.getElementById('metric-oxygen').innerText = oxygenation + '%';
+            document.getElementById('metric-tension').innerText = tension + 'x';
+            document.getElementById('metric-shannon').innerText = shannon;
+            
+            // Update status
+            const statusEl = document.getElementById('metric-status');
+            if (tension < 2) {
+                statusEl.innerText = 'SAFE';
+                statusEl.style.color = 'var(--emerald)';
+            } else if (tension < 4) {
+                statusEl.innerText = 'AT RISK';
+                statusEl.style.color = 'var(--amber)';
+            } else {
+                statusEl.innerText = 'DANGER';
+                statusEl.style.color = 'var(--rose)';
+            }
+            
+            // Update calculation display
+            document.getElementById('calc-insulin').innerText = document.getElementById('input-insulin').value;
+            document.getElementById('calc-crp').innerText = document.getElementById('input-crp').value;
+            document.getElementById('calc-trig').innerText = document.getElementById('input-trig').value;
+            document.getElementById('calc-glc').innerText = document.getElementById('input-glucose').value;
+            document.getElementById('calc-shannon').innerText = shannon;
+            document.getElementById('calc-result').innerText = tension + 'x';
+            document.getElementById('calc-final-risk').innerText = risk + '%';
+            
+            // Update colors
+            const riskEl = document.getElementById('final-risk');
+            const oxyEl = document.getElementById('metric-oxygen');
+            
+            if (tension < 2) {
+                riskEl.style.color = 'var(--emerald)';
+                oxyEl.style.color = 'var(--emerald)';
+            } else {
+                riskEl.style.color = '#dc2626';
+                oxyEl.style.color = '#dc2626';
+            }
+        }
+
+        // Reset
+        function resetDemo() {
+            if (confirm('Reset all values and start over?')) {
+                
+                // Reset sliders
+                document.getElementById('slider-akk').value = 12;
+                document.getElementById('slider-fae').value = 15;
+                document.getElementById('slider-bac').value = 36;
+                
+                // Reset inputs
+                document.getElementById('input-insulin').value = 4.2;
+                document.getElementById('input-crp').value = 0.4;
+                document.getElementById('input-glucose').value = 88;
+                document.getElementById('input-trig').value = 110;
+                
+                // Reset displays
+                document.getElementById('val-akk').innerText = '12%';
+                document.getElementById('val-fae').innerText = '15%';
+                document.getElementById('val-bac').innerText = '36%';
+                
+                // Recalculate
+                calcShannon();
+                mixHandshake();
+                
+                // Return to phase 1
+                nextPhase(1);
+                
+                // Success message
+                setTimeout(() => {
+                    alert('✓ Reset complete! Shannon: ' + shannon + ', Tension: ' + tension + 'x');
+                }, 500);
+            } else {
+            }
+        }
+
+        // Initialize
+        window.onload = () => {
+            // Set initial badge colors
+            document.getElementById('header-shannon').style.color = 'var(--emerald)';
+            document.getElementById('header-tension').style.color = 'var(--emerald)';
+            
+            calcShannon();
+            mixHandshake();
+            
+            // Add keyboard shortcuts
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowRight' && currentPhase < 4) nextPhase(currentPhase + 1);
+                if (e.key === 'ArrowLeft' && currentPhase > 1) nextPhase(currentPhase - 1);
+            });
         };
-
-        const VIP_MARKERS_FULL = [
-            { id: 'glucose', role: 'Blood Sugar', clinicalName: 'GLUCOSE', cat: 'metabolic', unit: 'mg/dL', ref: '70-99' },
-            { id: 'hba1c', role: '3-Month Avg', clinicalName: 'HbA1c', cat: 'metabolic', unit: '%', ref: '4.0-5.6' },
-            { id: 'insulin', role: 'Storage', clinicalName: 'INSULIN', cat: 'metabolic', unit: 'μIU/mL', ref: '2.0-12.0' },
-            { id: 'homa_ir', role: 'Resistance', clinicalName: 'HOMA-IR', cat: 'metabolic', unit: 'idx', ref: '<1.8' },
-            { id: 'igf1', role: 'Anabolic', clinicalName: 'IGF-1', cat: 'metabolic', unit: 'ng/mL', ref: '120-220' },
-            { id: 'triglycerides', role: 'Blood Fats', clinicalName: 'TRIGS', cat: 'lipid', unit: 'mg/dL', ref: '<150' },
-            { id: 'hdl', role: 'Good Chol', clinicalName: 'HDL-C', cat: 'lipid', unit: 'mg/dL', ref: '>45' },
-            { id: 'ldl', role: 'Bad Chol', clinicalName: 'LDL-C', cat: 'lipid', unit: 'mg/dL', ref: '<100' },
-            { id: 'apo_b', role: 'Heart Risk', clinicalName: 'APOB', cat: 'lipid', unit: 'mg/dL', ref: '<80' },
-            { id: 'crp', role: 'hs-CRP', clinicalName: 'hs-CRP', cat: 'inflammation', unit: 'mg/L', ref: '<1.0' },
-            { id: 'homocysteine', role: 'Vessel Stress', clinicalName: 'HCY', cat: 'inflammation', unit: 'μmol/L', ref: '<10.0' },
-            { id: 'ferritin', role: 'Iron Load', clinicalName: 'FERRITIN', cat: 'inflammation', unit: 'ng/mL', ref: '30-200' },
-            { id: 'uric_acid', role: 'Uric Acid', clinicalName: 'URATE', cat: 'kidney', unit: 'mg/dL', ref: '3.5-5.5' },
-            { id: 'creatinine', role: 'Waste Load', clinicalName: 'CREAT', cat: 'kidney', unit: 'mg/dL', ref: '0.7-1.3' },
-            { id: 'egfr', role: 'Filter Speed', clinicalName: 'eGFR', cat: 'kidney', unit: 'mL/min', ref: '>90' },
-            { id: 'alt', role: 'Liver A', clinicalName: 'ALT', cat: 'liver', unit: 'U/L', ref: '<35' },
-            { id: 'ast', role: 'Liver B', clinicalName: 'AST', cat: 'liver', unit: 'U/L', ref: '<35' },
-            { id: 'ggt', role: 'Detox Cap', clinicalName: 'GGT', cat: 'liver', unit: 'U/L', ref: '<30' },
-            { id: 'vitamin_d', role: 'Vitamin D', clinicalName: 'VIT D', cat: 'vitamins', unit: 'ng/mL', ref: '30-100' },
-            { id: 'vitamin_b12', role: 'Vitamin B12', clinicalName: 'B12', cat: 'vitamins', unit: 'pg/mL', ref: '400-900' },
-            { id: 'magnesium', role: 'Intra-Mag', clinicalName: 'MAG-RBC', cat: 'vitamins', unit: 'mg/dL', ref: '5.0-7.0' },
-            { id: 'testosterone', role: 'Male Hormone', clinicalName: 'T-TOTAL', cat: 'hormonal', unit: 'ng/dL', ref: '400-1000' },
-            { id: 'tsh', role: 'Thyroid', clinicalName: 'TSH', cat: 'hormonal', unit: 'μIU/mL', ref: '0.4-2.5' },
-            { id: 'cortisol', role: 'Stress', clinicalName: 'CORTISOL', cat: 'hormonal', unit: 'μg/dL', ref: '6.0-18.0' }
-        ];
-
-        const PHYLA_DEFS = [
-            { id: 'f', role: 'Harvesting', clinicalName: 'FIRMICUTES', ref: "20-30%", desc: "High levels cause calorie extraction spikes." },
-            { id: 'b', role: 'Burning', clinicalName: 'BACTEROIDETES', ref: "30-40%", desc: "Lean phyla promoting metabolic speed." },
-            { id: 'a', role: 'Defense', clinicalName: 'ACTINOBACTERIA', ref: ">5%", desc: "Mucosal barrier defense integrity node." },
-            { id: 'p', role: 'Hazard', clinicalName: 'PROTEOBACTERIA', ref: "<2%", desc: "Triggers acute systemic inflammatory fires." },
-            { id: 'v', role: 'Shield', clinicalName: 'VERRUCOMICROBIA', ref: ">1%", desc: "The Akkermansia barrier shield protection." }
-        ];
-
-        // ==================== 2. GLOBAL UTILITY LOGIC (HOISTED) ====================
-
-        function getStatusColor(status) {
-            if (status === 'critical') return 'text-rose-600';
-            if (status === 'warning') return 'text-amber-500';
-            return 'text-emerald-600';
-        }
-
-        function getStatusBg(status) {
-            if (status === 'critical') return 'bg-rose-50 border-rose-200';
-            if (status === 'warning') return 'bg-amber-50 border-amber-200';
-            return 'bg-emerald-50 border-emerald-200';
-        }
-
-        function getHandshakeLogic(id, status) {
-            const bridges = {
-                metabolic_bridge: {
-                    critical: { title: "Sugar Sync", mechanism: "Bacteria ↔ Insulin", clinicalImpact: "Gut phyla are forcing massive fat storage. Pancreas is overloaded.", exitPath: "Immediate carbohydrate purge phase." },
-                    warning: { title: "Sugar Sync", mechanism: "Bacteria ↔ Insulin", clinicalImpact: "Bacteria starting to slow your energy processing speed.", exitPath: "Add complex botanical fibers." },
-                    optimal: { title: "Sugar Sync", mechanism: "Bacteria ↔ Insulin", clinicalImpact: "Perfect sync. Burning fuel Machine-like.", exitPath: "Maintain Current Baseline." }
-                },
-                inflammation_bridge: {
-                    critical: { title: "Gut-Immune", mechanism: "Seal ↔ CRP", clinicalImpact: "Gut barrier is leaking fire into your blood.", exitPath: "3-day mucosal seal phase." },
-                    warning: { title: "Gut-Immune", mechanism: "Seal ↔ CRP", clinicalImpact: "Defense phyla are low, raising friction.", exitPath: "Add fermented food rotation." },
-                    optimal: { title: "Gut-Immune", mechanism: "Seal ↔ CRP", clinicalImpact: "Seal is strong. Zero leak detected. Peak defense resilience.", exitPath: "Keep phyla complexity." }
-                },
-                cardio_bridge: {
-                    critical: { title: "Heart-Renal", mechanism: "Urate ↔ ApoB", clinicalImpact: "Uric acid is locking your vessels tight. High resistance.", exitPath: "Flush urates immediately." },
-                    warning: { title: "Heart-Renal", mechanism: "Urate ↔ ApoB", clinicalImpact: "Early vessel stiffening from particle drift.", exitPath: "Switch to high-grade Omega fats." },
-                    optimal: { title: "Heart-Renal", mechanism: "Urate ↔ ApoB", clinicalImpact: "Vessels relaxed and open. Peak blood flow.", exitPath: "Maintain lipid balance." }
-                }
-            };
-            return bridges[id][status] || bridges[id].optimal;
-        }
-
-        function getAuditNarrative(category, status) {
-            const scenarios = {
-                metabolic: {
-                    critical: { mechanism: "Insulin system is failing.", clinicalImpact: "Storing fat instantly and aging faster.", exitStrategy: "24h fast immediately." },
-                    warning: { mechanism: "Sugar processing is slow.", clinicalImpact: "Early weight gain and energy dips.", exitStrategy: "Zero liquid sugar policy." },
-                    optimal: { mechanism: "Perfect sugar sync.", clinicalImpact: "Burning fuel like a peak machine.", exitStrategy: "Maintain fiber intake." }
-                },
-                lipid: {
-                    critical: { mechanism: "Arteries at hazard risk.", clinicalImpact: "High chance of plaque build-up.", exitStrategy: "Soluble fiber saturation." },
-                    warning: { mechanism: "Particles stay in blood too long.", clinicalImpact: "Low-grade vascular irritation building.", exitStrategy: "Switch cooking oils." },
-                    optimal: { mechanism: "Clean vessel sovereignty.", clinicalImpact: "Maximum flow to brain and organs.", exitStrategy: "Maintain course." }
-                },
-                gut: {
-                    critical: { mechanism: "Bad gut bacteria winning.", clinicalImpact: "Toxins leaking into your blood.", exitStrategy: "3-day purge phase." },
-                    warning: { mechanism: "Defense phyla are low.", clinicalImpact: "Bloating and reduced immunity.", exitStrategy: "Add fermented botanicals." },
-                    optimal: { mechanism: "Strong barrier shield.", clinicalImpact: "Zero bloating and peak absorption.", exitStrategy: "Rotate complex fibers." }
-                }
-            };
-            return scenarios[category]?.[status] || { mechanism: "Audit registry active.", clinicalImpact: "Standard baseline.", exitStrategy: "Standard Maintenance." };
-        }
-
-        function generatePatientData(id, name, age, nutshell, overrides = {}) {
-            const calculateStatus = (val, refStr) => {
-                if (!refStr) return 'optimal';
-                if (refStr.startsWith('<')) {
-                    const limit = parseFloat(refStr.replace('<', ''));
-                    return val > limit * 1.15 ? 'critical' : val > limit ? 'warning' : 'optimal';
-                }
-                if (refStr.startsWith('>')) {
-                    const limit = parseFloat(refStr.replace('>', ''));
-                    return val < limit * 0.85 ? 'critical' : val < limit ? 'warning' : 'optimal';
-                }
-                if (refStr.includes('-')) {
-                    const pts = refStr.split('-').map(parseFloat);
-                    if (val < pts[0] || val > pts[1]) return (val < pts[0] * 0.85 || val > pts[1] * 1.15) ? 'critical' : 'warning';
-                }
-                return 'optimal';
-            };
-
-            const markers = {};
-            VIP_MARKERS_FULL.forEach((mDef, idx) => {
-                const o = overrides[mDef.id] || {};
-                let baseVal = 34 + (id * 17 + idx * 11) % 150;
-                
-                if (id === 9) { // PEAK VITALITY HARD CALIBRATION
-                    if (mDef.id === 'glucose') baseVal = 82;
-                    if (mDef.id === 'hba1c') baseVal = 4.9;
-                    if (mDef.id === 'homa_ir') baseVal = 0.9;
-                    if (mDef.id === 'insulin') baseVal = 4.1;
-                    if (mDef.id === 'apo_b') baseVal = 62;
-                    if (mDef.id === 'crp') baseVal = 0.3;
-                    if (mDef.id === 'uric_acid') baseVal = 4.1;
-                    if (mDef.id === 'egfr') baseVal = 105;
-                    if (mDef.id === 'alt') baseVal = 18;
-                    if (mDef.id === 'ast') baseVal = 20;
-                    if (mDef.id === 'ggt') baseVal = 15;
-                    if (mDef.id === 'testosterone') baseVal = 750;
-                    if (mDef.id === 'igf1') baseVal = 180;
-                }
-
-                let val = o.value !== undefined ? o.value : baseVal; 
-                val = parseFloat(val.toFixed(1)); // PRECISION GUARD
-                markers[mDef.id] = { ...mDef, value: val, status: o.status || calculateStatus(val, mDef.ref) };
-            });
-
-            PHYLA_DEFS.forEach((pDef, idx) => {
-                const o = overrides[pDef.id] || {};
-                // SHAKE GUT MATH: 14%, 23%, 12% Spread
-                let val = 12 + (id * 9 + idx * 7) % 24;
-                if (pDef.id === 'p') val = 0.8 + (id * 0.3) % 1.8;
-                
-                if (id === 9) { // Optimal Gold Standard
-                    if (pDef.id === 'f') val = 24.2;
-                    if (pDef.id === 'b') val = 36.5;
-                    if (pDef.id === 'a') val = 8.1;
-                    if (pDef.id === 'p') val = 1.1;
-                    if (pDef.id === 'v') val = 4.1;
-                }
-
-                if (o.value !== undefined) val = o.value;
-                val = parseFloat(val.toFixed(1));
-
-                let status = 'optimal';
-                if (pDef.id === 'p' && val > 2) status = 'critical';
-                else if (pDef.id === 'f' && val > 35) status = 'critical';
-                else if (pDef.id === 'f' && val > 30) status = 'warning';
-                else if (pDef.id === 'a' && val < 5) status = 'warning';
-
-                markers[pDef.id] = { ...pDef, value: val, status, cat: 'gut', description: pDef.desc };
-            });
-
-            return { id: `P-${id}`, name, age, bioAge: age + (overrides.bioAgeDelta || 0), markers, nutshell };
-        }
-
-        // ==================== 5. UI HELPER COMPONENTS (HOISTED) ====================
-
-        function Icon({ name, className = "w-4 h-4", strokeWidth = 2 }) {
-            const icons = {
-                Activity: <path d="M22 12h-4l-3 9L9 3l-3 9H2" />,
-                Search: <Fragment><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></Fragment>,
-                LayoutDashboard: <Fragment><rect width="7" height="9" x="3" y="3" rx="1" /><rect width="7" height="5" x="14" y="3" rx="1" /><rect width="7" height="9" x="14" y="12" rx="1" /><rect width="7" height="5" x="3" y="15" rx="1" /></Fragment>,
-                Database: <Fragment><ellipse cx="12" cy="5" rx="9" ry="3" /><path d="M3 5V19A9 3 0 0 0 21 19V5" /><path d="M3 12A9 3 0 0 0 21 12" /></Fragment>,
-                Zap: <path d="M13 2 L3 14 L12 14 L11 22 L21 10 L12 10 Z" />,
-                Heart: <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />,
-                Droplet: <path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7Z" />,
-                Microscope: <Fragment><path d="M6 18h8" /><path d="M3 22h18" /><path d="M14 22a7 7 0 1 0-14 0" /><circle cx="14" cy="9" r="4" /><path d="M14 13v1" /><path d="M12 15h4" /></Fragment>,
-                ShieldCheck: <Fragment><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" /><path d="m9 12 2 2 4-4" /></Fragment>,
-                Layers: <Fragment><path d="m12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.27a1 1 0 0 0 0 1.83l8.58 4.09a2 2 0 0 0 1.66 0l8.58-4.09a1 1 0 0 0 0-1.83Z" /><path d="m3.58 13.49 8.16 3.9a2 2 0 0 0 1.66 0l8.16-3.9" /><path d="m3.58 17.49 8.16 3.9a2 2 0 0 0 1.66 0l8.16-3.9" /></Fragment>,
-                GitCompare: <Fragment><circle cx="18" cy="18" r="3" /><circle cx="6" cy="6" r="3" /><path d="M6 9v7c0 1.1.9 2 2 2h7" /><path d="M18 15V9c0-1.1-.9-2-2-2H9" /></Fragment>,
-                AlertOctagon: <Fragment><polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2" /><path d="M12 8v4" /><path d="M12 16h.01" /></Fragment>,
-                Clock: <Fragment><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></Fragment>,
-                Binary: <path d="M10 10V5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v5M10 18v5a1 1 0 0 0 1 1h2a1 1 0 0 0 1-1v-5M6 10h12M6 14h12" />,
-                Fingerprint: <Fragment><path d="M2 12C2 6.5 6.5 2 12 2s10 4.5 10 10" /><path d="M5 12c0-3.9 3.1-7 7-7s7 3.1 7 7" /><path d="M8 12c0-2.2 1.8-4 4-4s4 1.8 4 4" /></Fragment>,
-                Compass: <Fragment><circle cx="12" cy="12" r="10" /><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" /></Fragment>,
-                Stethoscope: <Fragment><path d="M21 15V2v0a5 5 0 0 0-10 0v4c0 1.1-.9 2-2 2H4a2 2 0 0 0-2 2v4a5 5 0 0 0 10 0v-4" /></Fragment>,
-                X: <Fragment><path d="M18 6 6 18" /><path d="M6 6l12 12" /></Fragment>,
-                BrainCircuit: <path d="M12 4.5a2.5 2.5 0 0 0-4.96-.46 2.5 2.5 0 0 0-1.98 3 2.5 2.5 0 0 0 .94 4.82 2.5 2.5 0 1 0 4.4-2.18 2.5 2.5 0 1 0 4.4 2.18 2.5 2.5 0 0 0 .94-4.82 2.5 2.5 0 0 0-1.98-3 2.5 2.5 0 0 0-4.96.46Z" />,
-                Info: <Fragment><circle cx="12" cy="12" r="10" /><path d="M12 16v-4" /><path d="M12 8h.01" /></Fragment>,
-                Target: <Fragment><circle cx="12" cy="12" r="10" /><circle cx="12" cy="12" r="6" /><circle cx="12" cy="12" r="2" /></Fragment>,
-                Cpu: <Fragment><rect x="4" y="4" width="16" height="16" rx="2" /><path d="M9 9h6v6H9z" /><path d="M15 2v2" /><path d="M15 20v2" /></Fragment>,
-                Wind: <path d="M17.7 7.7A2.5 2.5 0 1 1 20 12H4M17.7 16.3A2.5 2.5 0 1 0 20 12M6.7 14.7A2.5 2.5 0 1 0 9 19h7M6.7 9.3A2.5 2.5 0 1 1 9 5h4" />
-            };
-            return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={strokeWidth} strokeLinecap="round" strokeLinejoin="round" className={className}>{icons[name] || <circle cx="12" cy="12" r="10" />}</svg>;
-        }
-
-        function Badge({ status }) {
-            return (
-                <span className={`px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-widest ${status === 'critical' ? 'bg-rose-600 text-white' : status === 'warning' ? 'bg-amber-50 text-white' : 'bg-emerald-500 text-white'}`}>
-                    {status}
-                </span>
-            );
-        }
-
-        function ClinicalBadge({ name, colorClass = "text-blue-700 bg-blue-50 border-blue-100" }) {
-            return (
-                <span className={`px-1.5 py-0.5 border rounded text-[9px] font-black uppercase tracking-widest leading-none shadow-sm ${colorClass}`}>
-                    {name}
-                </span>
-            );
-        }
-
-        function CircularProgress({ value, status = 'optimal', size = 80 }) {
-            const radius = (size / 2) - 8;
-            const circumference = 2 * Math.PI * radius;
-            const offset = circumference - (value / 100) * circumference;
-            return (
-                <div className="relative inline-flex items-center justify-center">
-                    <svg width={size} height={size} className="transform -rotate-90">
-                        <circle cx={size/2} cy={size/2} r={radius} stroke="#f1f5f9" strokeWidth="5" fill="transparent" />
-                        <circle cx={size/2} cy={size/2} r={radius} stroke={status === 'critical' ? '#e11d48' : status === 'warning' ? '#f59e0b' : '#10b981'} strokeWidth="5" fill="transparent" strokeDasharray={circumference} strokeDashoffset={offset} strokeLinecap="round" className="transition-all duration-1000 ease-out" />
-                    </svg>
-                    <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-                        <span className="text-xl font-black text-slate-900 leading-none tracking-tighter">{Math.round(value)}</span>
-                        <span className="text-[7px] font-bold text-slate-400 uppercase tracking-tighter leading-none">Score</span>
-                    </div>
-                </div>
-            );
-        }
-
-        function Modal({ data, onClose }) {
-            if (!data) return null;
-            return (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-in" onClick={onClose}>
-                    <div className="bg-white rounded-[2rem] w-full max-w-xl shadow-2xl overflow-hidden zoom-in-95" onClick={e => e.stopPropagation()}>
-                        <div className="p-8 border-b flex justify-between items-center bg-slate-50">
-                            <div className="flex items-center gap-4">
-                                <div className="w-10 h-10 rounded-xl bg-slate-950 flex items-center justify-center shadow-lg text-white"><Icon name="Info" /></div>
-                                <div><h3 className="text-lg font-black uppercase tracking-tight leading-none">{data.title || data.role || data.name}</h3><p className="text-[10px] text-blue-600 font-extrabold uppercase tracking-widest mt-1">Audit Synthesis</p></div>
-                            </div>
-                            <button onClick={onClose} className="p-2 hover:bg-slate-200 rounded-xl transition-colors"><Icon name="X" /></button>
-                        </div>
-                        <div className="p-10 space-y-8">
-                            <div className="space-y-3">
-                                <p className="text-[11px] font-black uppercase text-blue-500 tracking-widest leading-none">Mechanism</p>
-                                <p className="text-base font-semibold text-slate-800 italic leading-relaxed">"{data.mechanism || "Registry monitoring."}"</p>
-                            </div>
-                            <div className="grid grid-cols-2 gap-6">
-                                <div className="p-5 bg-rose-50 rounded-2xl border border-rose-100 shadow-sm"><p className="text-[10px] font-black uppercase text-rose-500 mb-2">Impact</p><p className="text-sm font-bold text-rose-900 leading-snug">{data.clinicalImpact || "Sub-clinical drift node."}</p></div>
-                                <div className="p-5 bg-emerald-50 rounded-2xl border border-emerald-100 shadow-sm"><p className="text-[10px] font-black uppercase text-emerald-500 mb-2">Resolution</p><p className="text-sm font-bold text-emerald-900 leading-snug">{data.exitStrategy || data.exitPath || "Standard Maintenance."}</p></div>
-                            </div>
-                            {data.markers && data.markers.length > 0 && (
-                                <div className="space-y-3 pt-4 border-t border-slate-100">
-                                    <p className="text-[11px] font-black uppercase text-slate-400 tracking-widest border-b pb-2">Support Evidence</p>
-                                    <div className="grid gap-2 max-h-[250px] overflow-y-auto pr-2">
-                                        {data.markers.map((m, idx) => (
-                                            <div key={idx} className="flex justify-between items-center p-4 bg-slate-50 rounded-2xl border border-slate-100">
-                                                <div><span className="text-[11px] font-black text-slate-900 mr-2">{m.clinicalName}</span><span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{m.role}</span></div>
-                                                <div className="text-right flex items-center gap-4"><span className={`text-base font-black ${getStatusColor(m.status)}`}>{m.value} {m.unit || '%'}</span><Badge status={m.status} /></div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
-                            <button onClick={onClose} className="w-full py-4 bg-slate-950 text-white rounded-2xl font-black uppercase text-xs tracking-[0.3em] shadow-xl hover:bg-slate-800 transition-all active:scale-95">Acknowledge Audit</button>
-                        </div>
-                    </div>
-                </div>
-            );
-        }
-
-        // ==================== 6. MAIN APPLICATION ====================
-
-        function App() {
-            const [activeTab, setActiveTab] = useState('dashboard');
-            const [patientId, setPatientId] = useState('P-9'); // Start with the Optimal Profile
-            const [activeModal, setActiveModal] = useState(null);
-            const [isProcessing, setIsProcessing] = useState(false);
-            const [reportGenerated, setReportGenerated] = useState(false);
-            const [searchTerm, setSearchTerm] = useState('');
-
-            const patients = useMemo(() => [
-                generatePatientData(1, "Alpha Crisis Profile", 58, "Severe metabolic signaling collapse with acute phyla over-harvesting.", { hba1c: { value: 7.6 }, f: { value: 38.5 }, p: { value: 2.1 }, bioAgeDelta: 14 }),
-                generatePatientData(2, "Renal-Vascular Stress", 48, "Hyperuricemia paired with significant particle drift.", { uric_acid: { value: 9.2 }, egfr: { value: 58 }, crp: { value: 6.2 }, apo_b: { value: 128 }, bioAgeDelta: 9 }),
-                generatePatientData(3, "Hormonal Lead Drift", 39, "Low-grade metabolic stress disrupting repair signaling pathways.", { testosterone: { value: 245 }, v: { value: 0.6 }, bioAgeDelta: 6 }),
-                generatePatientData(4, "High-Particle risk", 52, "Significant ApoB elevation in the presence of vessel wall stress.", { apo_b: { value: 132 }, p: { value: 3.2 }, bioAgeDelta: 8 }),
-                generatePatientData(5, "Gut Phyla Crisis", 45, "Severe bacterial harvesting (Firmicutes) driving sugar storage.", { f: { value: 44.1 }, p: { value: 4.8 }, bioAgeDelta: 11 }),
-                generatePatientData(6, "Immune Barrier Collapse", 34, "Shield phyla depletion leading to systemic inflammatory fires.", { a: { value: 1.2 }, v: { value: 0.3 }, crp: { value: 5.8 }, bioAgeDelta: 7 }),
-                generatePatientData(9, "Peak Vitality Registry", 32, "Autonomous peak synchronization across all biological systems.", { bioAgeDelta: -6 })
-            ], []);
-
-            const patient = useMemo(() => patients.find(p => p.id === patientId), [patientId, patients]);
-
-            const stats = useMemo(() => {
-                if (!patient) return { healthScore: 0 };
-                const all = Object.values(patient.markers);
-                const optimalCount = all.filter(m => m.status === 'optimal').length;
-                return { healthScore: (optimalCount / all.length) * 100 };
-            }, [patient]);
-
-            const systemicPatterns = useMemo(() => {
-                if (!patient) return [];
-                return Object.entries(SYSTEM_CATEGORIES).map(([key, sys]) => {
-                    const markers = Object.values(patient.markers).filter(m => m.cat === key);
-                    const status = markers.some(m => m.status === 'critical') ? 'critical' : markers.some(m => m.status === 'warning') ? 'warning' : 'optimal';
-                    const narrative = getAuditNarrative(key, status);
-                    return { key, ...sys, markers, status, ...narrative };
-                });
-            }, [patient]);
-
-            const handshakes = useMemo(() => {
-                if (!patient) return [];
-                const bridges = [
-                    { id: 'metabolic_bridge', markers: [patient.markers.f, patient.markers.b, patient.markers.homa_ir] },
-                    { id: 'inflammation_bridge', markers: [patient.markers.a, patient.markers.crp] },
-                    { id: 'cardio_bridge', markers: [patient.markers.apo_b, patient.markers.uric_acid] }
-                ];
-                return bridges.map(b => {
-                    const status = b.markers.some(m => m.status === 'critical') ? 'critical' : b.markers.some(m => m.status === 'warning') ? 'warning' : 'optimal';
-                    const handshakeData = getHandshakeLogic(b.id, status);
-                    return { ...b, status, handshakeText: handshakeData.clinicalImpact, mechanism: handshakeData.mechanism, title: handshakeData.title };
-                });
-            }, [patient]);
-
-            const diseasePrognosis = useMemo(() => {
-                if (!patient) return [];
-                const m = patient.markers;
-                const getRisk = (score, high, low) => score > 35 ? { prob: score > 75 ? '🔴 Danger' : '🟡 Warning', time: score > 75 ? '1-3Y' : '3-7Y', mech: high } : { prob: '🔵 Optimal', time: 'Longevity', mech: low };
-                const t2d = (m.hba1c.status === 'critical' ? 45 : 10) + (m.homa_ir.status === 'critical' ? 45 : 0);
-                const heart = (m.apo_b.status === 'critical' ? 55 : 10) + (m.crp.status !== 'optimal' ? 25 : 0);
-                const renal = (m.uric_acid.status === 'critical' ? 50 : 0) + (m.egfr.status !== 'optimal' ? 50 : 0);
-                return [
-                    { name: 'Metabolic Decay', ...getRisk(t2d, "Your sugar sync is failing.", "Healthy insulin sync active.") },
-                    { name: 'Heart Risk Level', ...getRisk(heart, "Particles sticking to vessel walls.", "Clean heart blood flow.") },
-                    { name: 'Renal Filter Health', ...getRisk(renal, "Kidney pressure is high.", "Waste filtration is efficient.") }
-                ];
-            }, [patient]);
-
-            const dynamicVerdict = useMemo(() => {
-                const crit = systemicPatterns.filter(p => p.status === 'critical').length;
-                if (stats.healthScore > 90) return "Biological Sovereignty Achieved: All systems are in autonomous synchronization. No corrective intervention required. Strategy: Maintain current course.";
-                if (crit > 2) return `Critical Decoherence: ${crit} systems are in active failure. Decay velocity is critical at the gut-vascular bridge. This indicate high probability of clinical events. Immediate reset mandatory.`;
-                return "Sub-Clinical Signaling Drift: Early signaling decoherence detected. Metabolic and Immune bridges are losing stability. Restore biological baseline via phyla-insulin pulse.";
-            }, [stats, systemicPatterns]);
-
-            const runSynthesis = () => { setIsProcessing(true); setTimeout(() => { setIsProcessing(false); setReportGenerated(true); }, 1500); };
-
-            if (!patient) return null;
-
-            return (
-                <div className="min-h-screen relative pb-32 overflow-x-hidden">
-                    <header className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-200">
-                        <div className="max-w-6xl mx-auto px-6 py-3 flex justify-between items-center">
-                            <div className="flex items-center gap-4">
-                                <div className="w-10 h-10 bg-slate-950 rounded-xl flex items-center justify-center text-white shadow-lg"><Icon name="Fingerprint" className="w-5 h-5" /></div>
-                                <div><h1 className="text-lg font-black uppercase tracking-tighter leading-none">Burak CASCADE</h1><p className="text-[8px] font-black text-blue-600 uppercase tracking-[0.2em] mt-1">Audit Protocol v9.5</p></div>
-                            </div>
-                            <select value={patientId} onChange={(e) => { setPatientId(e.target.value); setReportGenerated(false); }} className="bg-slate-950 text-white font-black text-[10px] px-4 py-3 rounded-xl outline-none cursor-pointer uppercase shadow-lg border-none">
-                                {patients.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
-                            </select>
-                        </div>
-                    </header>
-
-                    <div className="max-w-5xl mx-auto px-6 pt-20 space-y-10 animate-in">
-                        <nav className="flex bg-white/90 p-1.5 rounded-2xl border border-slate-200 shadow-md gap-2 backdrop-blur-md">
-                            {[{ id: 'dashboard', label: 'Summary', icon: 'LayoutDashboard' }, { id: 'markers', label: 'Data Lake', icon: 'Database' }, { id: 'synthesis', label: 'AI Review', icon: 'BrainCircuit' }].map(t => (
-                                <button key={t.id} onClick={() => setActiveTab(t.id)} className={`flex-1 flex items-center justify-center gap-2 py-3.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeTab === t.id ? 'bg-slate-950 text-white shadow-lg scale-[1.01]' : 'text-slate-400 hover:text-slate-900 hover:bg-white'}`}><Icon name={t.id === 'synthesis' ? 'BrainCircuit' : t.icon} className="w-3.5 h-3.5" /> {t.label}</button>
-                            ))}
-                        </nav>
-
-                        {activeTab === 'dashboard' && (
-                            <div className="space-y-10">
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                    <div className="bg-white p-6 rounded-[2.5rem] shadow-lg flex items-center gap-8 border border-slate-200 transition-all">
-                                        <CircularProgress value={stats.healthScore} status={stats.healthScore < 60 ? 'critical' : stats.healthScore < 85 ? 'warning' : 'optimal'} size={110} />
-                                        <div><p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 leading-tight">Reliability</p><h2 className="text-4xl font-black tracking-tighter">{stats.healthScore > 90 ? 'A+' : stats.healthScore > 75 ? 'B' : 'C-'}</h2></div>
-                                    </div>
-                                    <div className="bg-white p-6 rounded-[2.5rem] shadow-lg border border-slate-200 flex flex-col justify-center transition-all">
-                                        <p className="text-[10px] font-black text-slate-400 uppercase mb-2 tracking-widest leading-none">Biological Clock</p>
-                                        <div className="flex items-baseline gap-2"><h2 className={`text-5xl font-black ${patient.bioAge > patient.age ? 'text-rose-600' : 'text-emerald-600'} leading-none tracking-tighter`}>{patient.bioAge}</h2><span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Yrs</span></div>
-                                        <p className="text-[9px] font-black text-slate-300 mt-3 tracking-widest leading-none">Registry: {patient.age}Y</p>
-                                    </div>
-                                    <div className="bg-slate-950 p-6 rounded-[2.5rem] text-white shadow-2xl relative overflow-hidden flex flex-col justify-center border-b-8 border-blue-600 transition-all">
-                                        <p className="text-[10px] font-black text-blue-400 uppercase mb-3 tracking-[0.2em]">Strategy Profile</p>
-                                        <p className="text-lg font-bold italic leading-tight">"{patient.nutshell}"</p>
-                                    </div>
-                                </div>
-
-                                {/* GCC INDEX RE-INTEGRATED */}
-                                <div className="bg-white p-8 rounded-[2rem] border border-slate-200 shadow-sm relative overflow-hidden group hover:border-blue-200 transition-all">
-                                    <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none rotate-12"><Icon name="Compass" className="w-16 h-16" /></div>
-                                    <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-                                        <div className="text-center md:text-left border-b md:border-b-0 md:border-r border-slate-100 pb-4 md:pb-0 md:pr-8">
-                                            <p className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-900 leading-none mb-1">GCC Index Calibration</p>
-                                            <p className="text-[8px] font-black text-slate-400 uppercase tracking-[0.2em]">Regional Calibration Index</p>
-                                        </div>
-                                        <div className="grid grid-cols-2 md:grid-cols-4 gap-10">
-                                            {[
-                                                { label: 'Vitamin D', cat: 'vitamin_d', b: 'VIT D', c: 'text-amber-700 bg-amber-50' },
-                                                { label: 'HbA1c', cat: 'hba1c', b: 'SUGAR', c: 'text-blue-700 bg-blue-50' },
-                                                { label: 'Urate', cat: 'uric_acid', b: 'URATE', c: 'text-indigo-700 bg-indigo-50' },
-                                                { label: 'Inflam', cat: 'crp', b: 'hs-CRP', c: 'text-rose-700 bg-rose-50' }
-                                            ].map((item, i) => (
-                                                <div key={i} className="flex flex-col items-center gap-2">
-                                                    <p className="text-[9px] font-black text-slate-500 uppercase tracking-widest">{item.label}</p>
-                                                    <div className="flex items-center gap-2">
-                                                        <ClinicalBadge name={item.b} colorClass={`${item.c} border-transparent shadow-none`} />
-                                                        <p className={`text-xl font-black text-clinical ${getStatusColor(patient.markers[item.cat].status)}`}>{patient.markers[item.cat].value}</p>
-                                                    </div>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                                    {systemicPatterns.map(sys => (
-                                        <button key={sys.key} onClick={() => setActiveModal(sys)} className={`p-8 text-left rounded-[2.5rem] border shadow-sm transition-all hover:scale-105 active:scale-95 flex flex-col gap-6 relative overflow-hidden group ${getStatusBg(sys.status)}`}>
-                                            <div className="flex justify-between items-center"><div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${sys.gradient} flex items-center justify-center text-white shadow-lg`}><Icon name={sys.icon} className="w-5 h-5" /></div><div className={`w-2 h-2 rounded-full ${sys.status === 'critical' ? 'bg-rose-50 animate-ping' : sys.status === 'warning' ? 'bg-amber-50' : 'bg-emerald-50'}`}></div></div>
-                                            <div><p className={`text-[7px] font-black uppercase tracking-widest mb-1 ${getStatusColor(sys.status)}`}>{sys.status.toUpperCase()}</p><h4 className="text-[11px] font-black text-slate-900 uppercase leading-tight tracking-tight">{sys.name}</h4></div>
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
-
-                        {activeTab === 'markers' && (
-                            <div className="space-y-10 animate-in">
-                                <div className="bg-white p-3 rounded-3xl border border-slate-200 shadow-sm flex items-center gap-4"><Icon name="Search" className="text-slate-300 w-6 h-6 ml-4" /><input type="text" placeholder="SEARCH CORE DATA LAKE..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value.toUpperCase())} className="flex-1 py-4 bg-transparent font-black text-[11px] uppercase tracking-widest outline-none" /></div>
-                                {Object.entries(SYSTEM_CATEGORIES).map(([catKey, catInfo]) => {
-                                    const markers = Object.values(patient.markers).filter(m => m.cat === catKey && (m.clinicalName.toUpperCase().includes(searchTerm)));
-                                    if (markers.length === 0) return null;
-                                    return (
-                                        <div key={catKey} className="space-y-6">
-                                            <div className="flex items-center gap-4 px-2"><div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${catInfo.gradient} flex items-center justify-center text-white shadow-md`}><Icon name={catInfo.icon} className="w-5 h-5" /></div><h3 className={`text-xs font-black uppercase tracking-[0.3em] ${catInfo.color}`}>{catInfo.name}</h3><div className="flex-1 h-px bg-slate-200"></div></div>
-                                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                                                {markers.map(m => (
-                                                    <div key={m.id} onClick={() => setActiveModal(m)} className={`bg-white p-6 rounded-3xl border border-slate-200 cursor-pointer hover:shadow-xl transition-all shadow-sm ${getStatusBg(m.status)}`}>
-                                                        <div className="flex justify-between items-start mb-4"><div><p className="text-[9px] font-black uppercase text-slate-900 leading-tight mb-1">{m.role}</p><ClinicalBadge name={m.clinicalName} /></div><Badge status={m.status} /></div>
-                                                        <p className={`text-3xl font-black text-clinical ${getStatusColor(m.status)}`}>{m.value} <span className="text-[10px] text-slate-400 uppercase tracking-widest ml-1">{m.unit}</span></p>
-                                                        <p className="text-[8px] font-bold text-slate-400 mt-4 tracking-tighter">Sync: {m.ref}</p>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    );
-                                })}
-
-                                {/* SIGNAL VAULT 253 table restored */}
-                                <div className="bg-slate-950 p-8 rounded-[3rem] text-white relative overflow-hidden border-b-[10px] border-blue-600 transition-all hover:scale-[1.01]">
-                                    <div className="absolute top-0 right-0 p-8 opacity-5 pointer-events-none rotate-12"><Icon name="Binary" className="w-32 h-32" /></div>
-                                    <div className="flex flex-col md:flex-row justify-between items-center gap-10 relative z-10">
-                                        <div className="space-y-4 text-center md:text-left max-w-lg">
-                                            <div className="inline-flex items-center gap-3 bg-white/10 px-4 py-1.5 rounded-full border border-white/10 mb-1">
-                                                <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
-                                                <p className="text-[9px] font-black uppercase tracking-[0.3em] text-blue-400 leading-none">Signal Vault 253</p>
-                                            </div>
-                                            <h3 className="text-xl font-black uppercase tracking-tight leading-none">Registry Auxiliary reference</h3>
-                                            <p className="text-[11px] font-medium text-slate-400 leading-relaxed uppercase tracking-[0.1em]">The protocol tracks 253 secondary clinical data nodes autonomously for high-fidelity adaptive drift detection while maintaining focus on Core VIP Biomarkers.</p>
-                                        </div>
-                                        <div className="flex-1 w-full bg-white/5 rounded-[2rem] p-6 border border-white/10">
-                                            <div className="grid grid-cols-4 md:grid-cols-8 gap-2 text-[7px] font-bold uppercase text-slate-500 max-h-[140px] overflow-y-auto pr-2">
-                                                {Array.from({ length: 253 }).map((_, i) => (
-                                                    <div key={i} className="bg-white/5 p-1 text-center rounded border border-white/5 text-slate-400 hover:bg-blue-600/20 transition-colors">NODE-{i+1}</div>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-
-                        {activeTab === 'synthesis' && (
-                            <div className="space-y-12 animate-in pb-20">
-                                {!reportGenerated ? (
-                                    <div className="audit-bg p-20 rounded-[3rem] shadow-2xl relative overflow-hidden flex flex-col items-center border border-white/5 min-h-[450px] justify-center text-center">
-                                        <div className="absolute inset-0 bg-gradient-to-br from-blue-600/5 to-transparent opacity-50"></div>
-                                        {isProcessing ? (
-                                            <div className="relative z-10 space-y-12 flex flex-col items-center"><Icon name="Cpu" className="w-20 h-20 text-blue-500 animate-spin" strokeWidth={1} /><p className="text-white font-black uppercase tracking-[0.5em] text-xs">SYNTHESIZING BRIDGES</p></div>
-                                        ) : (
-                                            <div className="relative z-10 flex flex-col items-center space-y-12"><div className="p-8 bg-white/5 rounded-full border border-white/10 text-blue-400 shadow-[0_0_80px_rgba(59,130,246,0.1)]"><Icon name="BrainCircuit" className="w-16 h-16 animate-pulse" /></div><div className="space-y-4 text-center"><h2 className="text-3xl font-black text-white uppercase tracking-tighter leading-none">AI Diagnostic Review</h2><p className="text-slate-400 max-w-lg mx-auto text-[10px] uppercase tracking-widest leading-relaxed">Processing multi-omic registry for {patient.name}.</p></div><button onClick={runSynthesis} className="bg-blue-600 text-white px-12 py-5 rounded-2xl font-black uppercase text-[10px] tracking-[0.3em] hover:bg-blue-50 shadow-xl transition-all">Start Audit</button></div>
-                                        )}
-                                    </div>
-                                ) : (
-                                    <div className="space-y-10">
-                                        <section className="audit-bg p-8 rounded-[3rem] text-white shadow-2xl border border-white/5 overflow-hidden relative">
-                                            <div className="relative z-10 flex items-center justify-between gap-10">
-                                                <div className="flex items-center gap-6">
-                                                    <div className="w-16 h-16 bg-blue-600 rounded-[2rem] shadow-2xl flex items-center justify-center text-white"><Icon name="Stethoscope" className="w-8 h-8" /></div>
-                                                    <div><h3 className="text-2xl font-black uppercase tracking-tight leading-none mb-2">Cascade Registry Audit</h3><div className="flex gap-4"><span className="text-[10px] font-black uppercase tracking-[0.3em] text-blue-400">{patient.name}</span><span className="text-[10px] font-black uppercase tracking-[0.3em] text-emerald-400 shadow-[0_0_10px_rgba(16,185,129,0.2)]">Validated</span></div></div>
-                                                </div>
-                                                <div className="flex gap-8 border-l border-white/10 pl-8">
-                                                    <div className="text-center"><p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1 leading-none">Potential</p><p className="text-4xl font-black text-clinical">{100 - (patient.bioAge - patient.age)}Y</p></div>
-                                                    <div className="text-center"><p className="text-[9px] font-black text-slate-500 uppercase tracking-widest mb-1 leading-none">Reliability</p><p className={`text-4xl font-black text-clinical ${stats.healthScore > 80 ? 'text-emerald-400' : 'text-rose-500'}`}>{stats.healthScore.toFixed(0)}%</p></div>
-                                                </div>
-                                            </div>
-                                        </section>
-
-                                        {/* PHASE 2: Logic Matrix restored */}
-                                        <section className="space-y-6">
-                                            <div className="flex items-center gap-6 px-4"><div className="w-10 h-10 bg-indigo-600 rounded-xl shadow-xl flex items-center justify-center text-white"><Icon name="Layers" className="w-5 h-5" /></div><h3 className="text-sm font-black uppercase tracking-[0.5em] text-slate-900 leading-none">Phase 2: Logic Matrix</h3><div className="flex-1 h-px bg-slate-200"></div></div>
-                                            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                                                {systemicPatterns.map(sys => (
-                                                    <button key={sys.key} onClick={() => setActiveModal({ ...sys, markers: sys.markers })} className={`p-8 text-left rounded-[3rem] border-2 shadow-lg flex flex-col justify-between aspect-square transition-all hover:scale-105 active:scale-95 ${getStatusBg(sys.status)}`}><div className="flex justify-between items-start"><div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${sys.gradient} flex items-center justify-center shadow-md text-white`}><Icon name={sys.icon} className="w-5 h-5" /></div><div className={`w-3 h-3 rounded-full ${sys.status === 'optimal' ? 'bg-emerald-50 shadow-[0_0_10px_#10b981]' : 'bg-rose-500 animate-pulse'}`}></div></div><div className="space-y-1"><p className={`text-[7px] font-black uppercase tracking-widest ${getStatusColor(sys.status)}`}>{sys.status.toUpperCase()}</p><h4 className="text-[13px] font-black text-slate-900 uppercase tracking-tighter leading-none">{sys.name}</h4></div></button>
-                                                ))}
-                                            </div>
-                                        </section>
-
-                                        {/* PHASE 3: THE MICROBIAL ENGINE unique shake */}
-                                        <section className="bg-white p-12 rounded-[4rem] border border-slate-200 shadow-xl space-y-12 relative overflow-hidden">
-                                            <div className="absolute top-0 right-0 p-16 opacity-5 text-indigo-600"><Icon name="Wind" className="w-64 h-64" /></div>
-                                            <div className="space-y-2 border-b pb-8"><h3 className="text-2xl font-black uppercase tracking-tight text-slate-900 leading-none">Phase 3: The Microbial Engine</h3><p className="text-[11px] font-black text-blue-600 uppercase tracking-[0.5em]">Evidence Node Performance & Registry Targets</p></div>
-                                            <div className="grid grid-cols-2 md:grid-cols-5 gap-8">
-                                                {PHYLA_DEFS.map(ph => {
-                                                    const m = patient.markers[ph.id];
-                                                    return (
-                                                        <div key={ph.id} onClick={() => setActiveModal({ ...m, title: ph.clinicalName, markers: [m], ...getAuditNarrative('gut', m.status) })} className="text-center space-y-4 group cursor-pointer">
-                                                            <div className={`aspect-square rounded-[2.5rem] ${getStatusBg(m.status)} flex flex-col items-center justify-center shadow-xl relative transition-all group-hover:scale-110 border-2`}>
-                                                                <span className={`text-[9px] font-black uppercase mb-1 tracking-widest leading-none ${getStatusColor(m.status)}`}>PH%</span>
-                                                                <span className={`text-3xl font-black text-clinical leading-none ${getStatusColor(m.status)}`}>{m.value}%</span>
-                                                                <p className={`text-[8px] font-black uppercase mt-4 tracking-widest px-3 py-1 rounded-full border leading-none bg-white ${getStatusColor(m.status)}`}>TARGET: {ph.ref}</p>
-                                                            </div>
-                                                            <div className="space-y-1"><p className="text-[10px] font-black uppercase text-slate-900 leading-none tracking-widest">{ph.role}</p><Badge status={m.status} /></div>
-                                                        </div>
-                                                    );
-                                                })}
-                                            </div>
-                                        </section>
-
-                                        {/* Phase 4 & 5 Grid dynamic narratives */}
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                                            {/* Logic Handshakes */}
-                                            <section className="space-y-8">
-                                                <div className="flex items-center gap-6 px-4"><div className="w-12 h-12 bg-blue-600 rounded-2xl shadow-xl flex items-center justify-center text-white"><Icon name="Binary" className="w-6 h-6" /></div><h3 className="text-sm font-black uppercase tracking-[0.5em] text-slate-900 leading-none">Logic Handshakes</h3></div>
-                                                <div className="grid gap-6">
-                                                    {handshakes.map((hs, i) => (
-                                                        <div key={i} onClick={() => setActiveModal({ ...hs, markers: hs.markers })} className={`p-8 rounded-[3rem] border shadow-xl space-y-6 bg-white logic-card cursor-pointer group ${getStatusBg(hs.status)}`}>
-                                                            <div className="flex justify-between items-center"><div className={`p-4 rounded-2xl ${getStatusColor(hs.status).replace('text', 'bg').replace('600', '50')} ${getStatusColor(hs.status)}`}><Icon name="GitCompare" className="w-6 h-6" /></div><Badge status={hs.status} /></div>
-                                                            <div><h4 className="text-lg font-black uppercase tracking-tighter text-slate-900 group-hover:text-blue-600 transition-colors leading-none">{hs.title}</h4><p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mt-2">{hs.mechanism}</p></div>
-                                                            <p className="text-xs font-semibold text-slate-500 leading-relaxed italic border-l-4 border-slate-100 pl-4">"{hs.handshakeText}"</p>
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            </section>
-
-                                            {/* Health Prognosis */}
-                                            <section className="space-y-8">
-                                                <div className="flex items-center gap-6 px-4"><div className="w-12 h-12 bg-slate-950 rounded-2xl shadow-xl flex items-center justify-center text-white"><Icon name="AlertOctagon" className="w-6 h-6" /></div><h3 className="text-sm font-black uppercase tracking-[0.5em] text-slate-900 leading-none">Health Prognosis</h3></div>
-                                                <div className="grid gap-6">
-                                                    {diseasePrognosis.map((d, i) => (
-                                                        <div key={i} onClick={() => setActiveModal({ title: d.name, markers: [], ...getAuditNarrative('metabolic', d.prob.includes('Optimal') ? 'optimal' : 'warning') })} className="bg-white p-8 rounded-[3rem] border border-slate-200 shadow-xl space-y-6 group hover:bg-slate-50 cursor-pointer transition-all">
-                                                            <div className="flex justify-between items-start">
-                                                                <div className="space-y-3"><h4 className="font-black text-slate-900 uppercase text-lg tracking-tight group-hover:text-blue-600 transition-colors leading-none">{d.name}</h4><div className="flex items-center gap-3 bg-slate-50 px-3 py-1 rounded-xl border border-slate-100 text-slate-400 shadow-sm"><Icon name="Clock" className="w-3 h-3" /><p className="text-[9px] font-black uppercase tracking-widest leading-none">{d.time}</p></div></div>
-                                                                <span className={`px-4 py-1.5 rounded-xl text-[10px] font-black tracking-widest ${d.prob.includes('Danger') ? 'bg-rose-100 text-rose-600' : 'bg-blue-100 text-blue-600'}`}>{d.prob}</span>
-                                                            </div>
-                                                            <p className="text-xs font-semibold text-slate-500 leading-relaxed italic border-l-4 border-slate-100 pl-4">"{d.mech}"</p>
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            </section>
-                                        </div>
-
-                                        <div className="audit-bg p-12 rounded-[4rem] text-white text-center space-y-10 border border-white/5 relative overflow-hidden shadow-2xl">
-                                            <div className="absolute inset-0 bg-gradient-to-t from-blue-600/15 to-transparent opacity-50"></div>
-                                            <h4 className="text-3xl font-black uppercase tracking-[0.6em] text-blue-400 relative z-10 leading-none">Diagnostic Synthesis</h4>
-                                            <p className="text-xl text-slate-300 font-medium max-w-4xl mx-auto leading-relaxed uppercase tracking-[0.2em] relative z-10 px-6 text-center">
-                                                {dynamicVerdict} Current signaling indicate a path toward <strong className="text-white border-b-4 border-blue-600 px-3">Biological Sovereignty</strong>.
-                                            </p>
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
-                        )}
-
-                        <footer className="mt-20 pt-16 border-t border-slate-200 text-center flex flex-col items-center gap-8">
-                            <div className="w-12 h-12 bg-slate-950 rounded-xl flex items-center justify-center text-white shadow-2xl transform hover:rotate-12 transition-transform"><Icon name="Fingerprint" className="w-6 h-6" /></div>
-                            <div className="space-y-4">
-                                <h2 className="text-[10px] font-black uppercase tracking-[1.6em] text-slate-300 ml-[1.6em]">Burak Longevity</h2>
-                                <p className="text-[12px] font-black text-slate-600 uppercase tracking-widest">Developed by <span className="text-slate-950 underline decoration-blue-600 decoration-4 underline-offset-4">Waseem Ahanger</span></p>
-                                <div className="flex items-center justify-center gap-3 text-slate-400"><div className="w-1.5 h-1.5 bg-blue-600 rounded-full animate-ping"></div><p className="text-[8px] font-black uppercase tracking-[0.3em] italic">GCP Vertex AI Precision Infrastructure</p></div>
-                            </div>
-                        </footer>
-                    </div>
-                    {activeModal && <Modal data={activeModal} onClose={() => setActiveModal(null)} />}
-                </div>
-            );
-        }
-
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<App />);
     </script>
 </body>
 </html>
