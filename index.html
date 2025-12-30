@@ -761,6 +761,29 @@
             .nav-dot { width: 10px; height: 10px; }
             .nav-dot.active { width: 30px; }
             
+            /* Compute overlay mobile */
+            #compute-overlay > div {
+                padding: 20px;
+            }
+            #compute-overlay > div > div:first-child {
+                width: 80px !important;
+                height: 80px !important;
+                font-size: 40px !important;
+            }
+            #compute-overlay > div > div:nth-child(2) {
+                font-size: 20px !important;
+            }
+            #compute-steps-display {
+                min-width: auto !important;
+                max-width: 90vw !important;
+                padding: 20px !important;
+                font-size: 12px !important;
+            }
+            #compute-overlay > div > div:nth-child(4) {
+                width: 90vw !important;
+                max-width: 400px !important;
+            }
+            
             /* Math Engine mobile */
             div[onclick*="math-note"] {
                 bottom: 15px !important;
@@ -1573,6 +1596,75 @@
                 Developed by Waseem Ahanger
             </span>
         </footer>
+        
+        <!-- Computing Overlay -->
+        <div id="compute-overlay" style="
+            position: fixed; inset: 0; z-index: 9999;
+            background: rgba(5, 7, 10, 0.98);
+            backdrop-filter: blur(20px);
+            display: none; align-items: center; justify-content: center;
+            flex-direction: column; gap: 30px;">
+            
+            <div style="text-align: center;">
+                <!-- Spinning Engine Icon -->
+                <div style="width: 120px; height: 120px; margin: 0 auto 30px;
+                            background: linear-gradient(135deg, var(--emerald), var(--cyan));
+                            border-radius: 30px; display: flex; align-items: center; justify-content: center;
+                            font-size: 60px; animation: spin 2s linear infinite;
+                            box-shadow: 0 20px 60px rgba(16, 185, 129, 0.4);">
+                    ⚙️
+                </div>
+                
+                <!-- Computing Text -->
+                <div style="font-size: 28px; font-weight: 900; color: var(--emerald);
+                            margin-bottom: 15px; letter-spacing: 2px; text-transform: uppercase;">
+                    MATH ENGINE COMPUTING
+                </div>
+                
+                <!-- Computation Steps -->
+                <div id="compute-steps-display" style="
+                    font-family: 'JetBrains Mono'; font-size: 14px; color: var(--cyan);
+                    text-align: left; background: rgba(0,0,0,0.4); padding: 25px 35px;
+                    border-radius: 20px; border: 1px solid var(--border);
+                    min-width: 500px; max-width: 600px;">
+                    <div class="compute-line" style="margin: 8px 0; opacity: 0;">
+                        ✓ Reading microbiome data...
+                    </div>
+                    <div class="compute-line" style="margin: 8px 0; opacity: 0;">
+                        ✓ Calculating Shannon Entropy...
+                    </div>
+                    <div class="compute-line" style="margin: 8px 0; opacity: 0;">
+                        ✓ Processing biomarkers...
+                    </div>
+                    <div class="compute-line" style="margin: 8px 0; opacity: 0;">
+                        ✓ Computing tension coefficient...
+                    </div>
+                    <div class="compute-line" style="margin: 8px 0; opacity: 0;">
+                        ✓ Analyzing trajectory...
+                    </div>
+                    <div class="compute-line" style="margin: 8px 0; opacity: 0;">
+                        ✓ Generating predictions...
+                    </div>
+                </div>
+                
+                <!-- Progress Bar -->
+                <div style="width: 500px; height: 6px; background: rgba(255,255,255,0.1);
+                            border-radius: 10px; overflow: hidden; margin-top: 30px;">
+                    <div id="compute-progress" style="
+                        height: 100%; width: 0%; 
+                        background: linear-gradient(90deg, var(--emerald), var(--cyan));
+                        transition: width 0.3s ease;
+                        box-shadow: 0 0 20px var(--emerald);"></div>
+                </div>
+                
+                <!-- Status Text -->
+                <div id="compute-status" style="
+                    margin-top: 20px; font-size: 13px; color: var(--text-muted);
+                    font-family: 'JetBrains Mono';">
+                    Initializing...
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -1584,15 +1676,103 @@
 
         // Phase Navigation
         function nextPhase(p) {
-            currentPhase = p;
-            updatePhaseUI(p);
+            showComputeOverlay(p, () => {
+                currentPhase = p;
+                updatePhaseUI(p);
+            });
         }
 
         function jumpPhase(p) {
             if (p <= currentPhase || p === 1) {
-                currentPhase = p;
-                updatePhaseUI(p);
+                showComputeOverlay(p, () => {
+                    currentPhase = p;
+                    updatePhaseUI(p);
+                });
             }
+        }
+        
+        // Show computing overlay with animation
+        function showComputeOverlay(phase, callback) {
+            const overlay = document.getElementById('compute-overlay');
+            const progress = document.getElementById('compute-progress');
+            const status = document.getElementById('compute-status');
+            const lines = document.querySelectorAll('.compute-line');
+            
+            // Show overlay
+            overlay.style.display = 'flex';
+            
+            // Reset
+            progress.style.width = '0%';
+            lines.forEach(line => line.style.opacity = '0');
+            
+            // Phase-specific computations
+            const computations = {
+                1: [
+                    'Reading microbiome composition...',
+                    'Calculating Shannon Entropy...',
+                    'Evaluating diversity index...',
+                    'Assessing barrier integrity...'
+                ],
+                2: [
+                    'Loading biomarker data...',
+                    'Processing insulin resistance...',
+                    'Calculating inflammation markers...',
+                    'Computing handshake tension...',
+                    'Analyzing metabolic burden...'
+                ],
+                3: [
+                    'Plotting trajectory curve...',
+                    'Calculating 20-year projection...',
+                    'Mapping risk zones...',
+                    'Positioning current state...',
+                    'Rendering graph visualization...'
+                ],
+                4: [
+                    'Running comprehensive analysis...',
+                    'Computing gangrene probability...',
+                    'Calculating tissue oxygenation...',
+                    'Modeling pathway mechanisms...',
+                    'Generating risk assessment...',
+                    'Preparing clinical report...'
+                ]
+            };
+            
+            const steps = computations[phase] || computations[1];
+            const totalTime = 2000; // 2 seconds total
+            const stepTime = totalTime / steps.length;
+            
+            // Animate computation steps
+            steps.forEach((step, index) => {
+                setTimeout(() => {
+                    if (lines[index]) {
+                        lines[index].textContent = '✓ ' + step;
+                        lines[index].style.opacity = '1';
+                        lines[index].style.transition = 'opacity 0.3s ease';
+                    }
+                    
+                    // Update progress
+                    const progressPercent = ((index + 1) / steps.length) * 100;
+                    progress.style.width = progressPercent + '%';
+                    
+                    // Update status
+                    if (index === steps.length - 1) {
+                        status.textContent = 'Complete!';
+                    } else {
+                        status.textContent = `Processing... ${Math.round(progressPercent)}%`;
+                    }
+                }, stepTime * index);
+            });
+            
+            // Complete and hide
+            setTimeout(() => {
+                overlay.style.opacity = '0';
+                overlay.style.transition = 'opacity 0.3s';
+                setTimeout(() => {
+                    overlay.style.display = 'none';
+                    overlay.style.opacity = '1';
+                    callback();
+                }, 300);
+            }, totalTime + 200);
         }
 
         function updatePhaseUI(p) {
