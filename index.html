@@ -1,2141 +1,506 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="description" content="Al-Mohafiz: Interactive microbiome-metabolic modeling using Shannon Entropy to predict Type 2 Diabetes risk. Built by Waseem Ahanger for BURAK Platform.">
-    <meta name="keywords" content="microbiome, Type 2 Diabetes, Shannon Entropy, metabolic health, Akkermansia, gut health, BURAK, computational medicine">
-    <meta name="author" content="Waseem Ahanger">
-    <meta name="theme-color" content="#10b981">
-    
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website">
-    <meta property="og:title" content="Al-Mohafiz | BURAK Clinical Intelligence">
-    <meta property="og:description" content="Interactive gut-metabolic modeling for T2D risk assessment using Shannon Entropy. Pure math. Zero AI.">
-    <meta property="og:image" content="https://via.placeholder.com/1200x630/0a0e27/10b981?text=AL-MOHAFIZ">
-    
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:title" content="Al-Mohafiz | BURAK Clinical Intelligence">
-    <meta property="twitter:description" content="Interactive gut-metabolic modeling for T2D risk assessment. Pure math. Zero AI.">
-    
-    <title>Al-Mohafiz | BURAK Clinical Intelligence Platform</title>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&family=Space+Grotesk:wght@400;600;800&family=Noto+Sans+Arabic:wght@400;700;900&display=swap" rel="stylesheet">
-    <style>
-        * { 
-            margin: 0; padding: 0; box-sizing: border-box; 
-            -webkit-tap-highlight-color: transparent;
-            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
-        }
-        
-        :root {
-            --emerald: #10b981; --amber: #f59e0b; --rose: #ef4444; 
-            --blue: #3b82f6; --purple: #a855f7; --cyan: #06b6d4; --indigo: #6366f1;
-            --bg-body: #05070a; --border: rgba(255,255,255,0.08); 
-            --bg-card: rgba(255,255,255,0.06); --text-primary: #f8fafc; 
-            --text-muted: #94a3b8; --ring-color: var(--emerald);
-        }
-
-        body {
-            font-family: 'Space Grotesk', 'Noto Sans Arabic', sans-serif;
-            background: linear-gradient(135deg, #0a0e27 0%, #05070a 100%);
-            color: var(--text-primary); min-height: 100vh; overflow-x: hidden;
-            position: relative;
-        }
-        
-        body::before {
-            content: '';
-            position: fixed;
-            inset: 0;
-            background: 
-                radial-gradient(circle at 20% 30%, rgba(99, 102, 241, 0.05), transparent 50%),
-                radial-gradient(circle at 80% 70%, rgba(16, 185, 129, 0.05), transparent 50%),
-                radial-gradient(circle at 50% 50%, rgba(168, 85, 247, 0.03), transparent 60%);
-            animation: backgroundShift 20s ease-in-out infinite;
-            pointer-events: none;
-            z-index: 0;
-        }
-        
-        @keyframes backgroundShift {
-            0%, 100% { opacity: 0.5; }
-            50% { opacity: 1; }
-        }
-
-        /* Animated Background Particles */
-        .particle-bg {
-            position: fixed; inset: 0; z-index: 0; pointer-events: none;
-            background: radial-gradient(circle at 20% 50%, rgba(99, 102, 241, 0.03) 0%, transparent 50%),
-                        radial-gradient(circle at 80% 80%, rgba(16, 185, 129, 0.03) 0%, transparent 50%);
-        }
-
-        .story-canvas {
-            width: 100vw; min-height: 100vh; position: relative; z-index: 1;
-            display: flex; flex-direction: column;
-        }
-
-        /* Enhanced Header */
-        header {
-            padding: 25px 50px; display: flex; justify-content: space-between; align-items: center;
-            position: fixed; top: 0; left: 0; right: 0; z-index: 3000; 
-            border-bottom: 1px solid var(--border);
-            background: rgba(5, 7, 10, 0.95); backdrop-filter: blur(25px);
-            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-        }
-        .brand { display: flex; align-items: center; gap: 15px; }
-        .brand-icon { 
-            width: 48px; height: 48px; background: linear-gradient(135deg, var(--emerald), var(--cyan));
-            border-radius: 12px; display: flex; align-items: center; justify-content: center;
-            font-size: 24px; box-shadow: 0 4px 20px rgba(16, 185, 129, 0.3);
-        }
-        .brand h1 { 
-            font-size: 18px; font-weight: 900; letter-spacing: 3px;
-            background: linear-gradient(135deg, #fff, var(--cyan));
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-        }
-        .arabic-sub { 
-            font-family: 'Noto Sans Arabic'; font-size: 11px; 
-            color: var(--cyan); margin-top: 2px; opacity: 0.8;
-        }
-
-        .header-stats {
-            display: flex; gap: 25px; align-items: center;
-        }
-        .stat-pill {
-            padding: 10px 20px; border-radius: 20px; 
-            background: rgba(255,255,255,0.05); border: 1px solid var(--border);
-            font-size: 11px; font-weight: 800; text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-        .stat-pill span { 
-            font-family: 'JetBrains Mono'; font-size: 16px; 
-            margin-left: 8px; 
-            /* color removed - controlled by JavaScript */
-            transition: color 0.4s ease;
-        }
-
-        /* Progress Navigation */
-        .progress-nav {
-            position: fixed; top: 100px; left: 50%; transform: translateX(-50%);
-            z-index: 2500; display: flex; gap: 12px; align-items: center;
-            background: rgba(5, 7, 10, 0.9); backdrop-filter: blur(15px);
-            padding: 15px 30px; border-radius: 40px; border: 1px solid var(--border);
-            box-shadow: 0 8px 32px rgba(0,0,0,0.5);
-        }
-        .nav-dot { 
-            width: 12px; height: 12px; border-radius: 50%; 
-            background: var(--border); cursor: pointer; transition: 0.4s;
-            position: relative;
-        }
-        .nav-dot:hover { transform: scale(1.3); background: rgba(59, 130, 246, 0.5); }
-        .nav-dot.active { 
-            width: 40px; border-radius: 20px; background: var(--blue); 
-            box-shadow: 0 0 20px var(--blue);
-        }
-        .nav-label {
-            position: absolute; top: -30px; left: 50%; transform: translateX(-50%);
-            font-size: 9px; font-weight: 800; text-transform: uppercase;
-            white-space: nowrap; opacity: 0; transition: 0.3s; pointer-events: none;
-            color: var(--cyan);
-        }
-        .nav-dot:hover .nav-label { opacity: 1; top: -35px; }
-
-        .stage {
-            position: absolute; inset: 0; display: flex; flex-direction: column; 
-            justify-content: flex-start; align-items: center; 
-            padding: 180px 50px 50px 50px; transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-            opacity: 0; pointer-events: none; overflow-y: auto;
-        }
-        .stage.active { opacity: 1; pointer-events: all; position: relative; }
-
-        /* ============ PHASE 1: THE GUARDIAN ============ */
-        .guardian-grid { 
-            display: grid; grid-template-columns: 1.3fr 1fr; gap: 50px; 
-            width: 100%; max-width: 1400px; align-items: flex-start; 
-        }
-
-        /* Mega Shannon Dial */
-        .mega-dial-container {
-            position: relative; padding: 40px;
-        }
-        .mega-dial {
-            width: 320px; height: 320px; margin: 0 auto;
-            border: 20px solid rgba(255, 255, 255, 0.02);
-            border-radius: 50%; display: flex; flex-direction: column; 
-            align-items: center; justify-content: center; position: relative; 
-            cursor: pointer; transition: 0.5s;
-            background: radial-gradient(circle, rgba(255,255,255,0.03) 0%, transparent 70%);
-        }
-        .mega-dial:hover { transform: scale(1.05) rotate(5deg); }
-        .mega-dial::after {
-            content: ''; position: absolute; inset: -20px; 
-            border: 20px solid var(--ring-color); border-radius: 50%; 
-            border-bottom-color: transparent; border-left-color: transparent;
-            transition: 1.5s cubic-bezier(0.34, 1.56, 0.64, 1); 
-            transform: rotate(var(--angle, 320deg));
-            filter: drop-shadow(0 0 30px var(--ring-color));
-            animation: pulse-ring 3s infinite;
-        }
-        @keyframes pulse-ring {
-            0%, 100% { filter: drop-shadow(0 0 30px var(--ring-color)); }
-            50% { filter: drop-shadow(0 0 50px var(--ring-color)); }
-        }
-
-        .dial-icon { 
-            font-size: 48px; margin-bottom: 10px;
-            animation: float 3s ease-in-out infinite;
-        }
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
-        
-        .dial-label { 
-            font-size: 11px; font-weight: 900; color: var(--text-muted); 
-            text-transform: uppercase; letter-spacing: 2px; margin-bottom: 5px;
-        }
-        .dial-value { 
-            font-size: 80px; font-weight: 900; font-family: 'JetBrains Mono'; 
-            color: var(--ring-color); line-height: 1;
-            text-shadow: 0 0 60px var(--ring-color);
-            transition: 0.5s;
-        }
-        .dial-status { 
-            margin-top: 15px; padding: 10px 24px; border-radius: 25px;
-            font-size: 12px; font-weight: 900; text-transform: uppercase;
-            background: var(--ring-color); color: #000; letter-spacing: 1px;
-            box-shadow: 0 4px 20px var(--ring-color);
-        }
-
-        /* Interactive Cards */
-        .info-card {
-            background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%);
-            padding: 28px; border-radius: 24px; border-left: 4px solid var(--blue);
-            margin-top: 20px; font-size: 14px; line-height: 1.8; text-align: left;
-            transition: 0.4s; position: relative; overflow: hidden;
-            backdrop-filter: blur(10px);
-        }
-        .info-card::before {
-            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 1px;
-            background: linear-gradient(90deg, transparent, var(--blue), transparent);
-            opacity: 0; transition: 0.3s;
-        }
-        .info-card:hover { 
-            background: rgba(255,255,255,0.06); transform: translateX(8px);
-            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-        }
-        .info-card:hover::before { opacity: 1; }
-        
-        .card-icon {
-            font-size: 28px; margin-bottom: 12px; display: block;
-            filter: drop-shadow(0 0 10px currentColor);
-        }
-        .card-title { 
-            font-size: 13px; text-transform: uppercase; color: var(--blue); 
-            margin-bottom: 10px; letter-spacing: 1px; font-weight: 900;
-            display: flex; align-items: center; gap: 8px;
-        }
-        .arabic-text { 
-            font-family: 'Noto Sans Arabic'; font-size: 13px; margin-top: 10px; 
-            display: block; opacity: 0.7; line-height: 2; color: var(--cyan);
-            font-style: italic;
-        }
-
-        /* Control Panel with Neon Effects */
-        .control-panel { 
-            background: linear-gradient(135deg, rgba(99, 102, 241, 0.08) 0%, rgba(16, 185, 129, 0.08) 100%);
-            padding: 40px; border-radius: 40px; 
-            border: 1px solid var(--border); position: relative; overflow: hidden;
-        }
-        .control-panel::before {
-            content: ''; position: absolute; top: -50%; left: -50%; 
-            width: 200%; height: 200%; 
-            background: radial-gradient(circle, rgba(99, 102, 241, 0.1) 0%, transparent 70%);
-            animation: rotate-gradient 15s linear infinite;
-            pointer-events: none;
-        }
-        @keyframes rotate-gradient {
-            to { transform: rotate(360deg); }
-        }
-
-        .panel-title {
-            font-size: 14px; font-weight: 900; color: var(--purple); 
-            text-transform: uppercase; letter-spacing: 2px; margin-bottom: 30px;
-            display: flex; align-items: center; gap: 10px;
-        }
-        .panel-title::before {
-            content: '🧬'; font-size: 24px;
-        }
-
-        /* Enhanced Sliders */
-        .slider-group { 
-            margin-bottom: 30px; position: relative; z-index: 1;
-            padding: 20px; border-radius: 20px;
-            background: rgba(0,0,0,0.2); backdrop-filter: blur(5px);
-            border: 1px solid rgba(255,255,255,0.05);
-            transition: 0.3s;
-        }
-        .slider-group:hover {
-            background: rgba(0,0,0,0.3);
-            border-color: var(--blue);
-            box-shadow: 0 4px 20px rgba(59, 130, 246, 0.2);
-        }
-        
-        .slider-header {
-            display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 12px;
-        }
-        .slider-label {
-            font-size: 12px; font-weight: 900; color: var(--text-muted);
-            text-transform: uppercase; letter-spacing: 1.5px;
-            display: flex; align-items: center; gap: 8px;
-        }
-        .slider-label::before {
-            content: attr(data-icon); font-size: 20px;
-        }
-        .slider-value {
-            font-family: 'JetBrains Mono'; font-size: 24px; font-weight: 900;
-            color: var(--emerald); text-shadow: 0 0 20px currentColor;
-        }
-
-        .custom-slider { 
-            width: 100%; appearance: none; height: 8px; 
-            background: linear-gradient(90deg, 
-                var(--rose) 0%, 
-                var(--amber) 40%, 
-                var(--emerald) 100%);
-            border-radius: 10px; outline: none; cursor: pointer;
-            transition: 0.3s; position: relative;
-            box-shadow: inset 0 2px 8px rgba(0,0,0,0.3);
-        }
-        .custom-slider:hover { height: 10px; }
-        .custom-slider::-webkit-slider-thumb { 
-            appearance: none; width: 32px; height: 32px; 
-            background: linear-gradient(135deg, #fff, var(--cyan));
-            border-radius: 50%; cursor: grab; 
-            border: 4px solid var(--blue);
-            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.6),
-                        inset 0 -2px 5px rgba(0,0,0,0.2);
-            transition: 0.2s;
-        }
-        .custom-slider::-webkit-slider-thumb:hover { 
-            transform: scale(1.3); 
-            box-shadow: 0 8px 30px rgba(59, 130, 246, 0.8);
-        }
-        .custom-slider::-webkit-slider-thumb:active { 
-            cursor: grabbing; transform: scale(1.1);
-        }
-
-        .ref-range { 
-            font-size: 10px; font-family: 'JetBrains Mono'; 
-            color: var(--amber); margin-top: 8px; display: flex;
-            align-items: center; gap: 6px; opacity: 0.8;
-        }
-        .ref-range::before { content: '⚠️'; }
-
-        /* Alert Box */
-        .erosion-alert {
-            background: linear-gradient(135deg, rgba(239, 68, 68, 0.2) 0%, rgba(239, 68, 68, 0.05) 100%);
-            border: 2px solid var(--rose); border-radius: 20px; padding: 25px;
-            margin-top: 25px; animation: alert-pulse 2s infinite;
-            box-shadow: 0 0 30px rgba(239, 68, 68, 0.3);
-        }
-        @keyframes alert-pulse {
-            0%, 100% { box-shadow: 0 0 30px rgba(239, 68, 68, 0.3); }
-            50% { box-shadow: 0 0 50px rgba(239, 68, 68, 0.6); }
-        }
-        .alert-icon {
-            font-size: 40px; margin-bottom: 15px; display: block;
-            animation: shake 0.5s infinite;
-        }
-        @keyframes shake { 
-            0%, 100% { transform: translateX(0) rotate(0deg); } 
-            25% { transform: translateX(-5px) rotate(-5deg); } 
-            75% { transform: translateX(5px) rotate(5deg); } 
-        }
-        .alert-text {
-            font-size: 16px; font-weight: 900; color: var(--rose);
-            text-transform: uppercase; letter-spacing: 1px;
-        }
-
-        /* CTA Button */
-        .btn-mega { 
-            width: 100%; padding: 25px 50px; border-radius: 60px; 
-            border: 2px solid var(--border); 
-            background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(99, 102, 241, 0.2));
-            color: #fff; font-weight: 900; text-transform: uppercase; 
-            cursor: pointer; transition: 0.4s; font-size: 13px; 
-            letter-spacing: 2px; position: relative; overflow: hidden;
-            margin-top: 30px; backdrop-filter: blur(10px);
-        }
-        .btn-mega::before {
-            content: ''; position: absolute; inset: 0; 
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            transform: translateX(-100%); transition: 0.6s;
-        }
-        .btn-mega:hover::before { transform: translateX(100%); }
-        .btn-mega:hover { 
-            background: linear-gradient(135deg, var(--blue), var(--indigo));
-            border-color: var(--blue); transform: translateY(-4px);
-            box-shadow: 0 12px 40px rgba(59, 130, 246, 0.5);
-        }
-        .btn-mega span {
-            position: relative; z-index: 1;
-        }
-
-        /* ============ PHASE 2: MIXER ============ */
-        .mixer-layout {
-            display: grid; grid-template-columns: 500px auto 500px; 
-            gap: 40px; width: 100%; max-width: 1600px; align-items: flex-start;
-        }
-
-        .mixer-title {
-            text-align: center; margin-bottom: 40px;
-        }
-        .mixer-title h2 {
-            font-size: 42px; font-weight: 900; letter-spacing: -1px;
-            background: linear-gradient(135deg, #fff, var(--cyan));
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            margin-bottom: 10px;
-        }
-        .mixer-subtitle {
-            font-family: 'Noto Sans Arabic'; font-size: 20px; 
-            color: var(--cyan); opacity: 0.8;
-        }
-
-        .mixer-column { 
-            background: linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%);
-            padding: 45px; border-radius: 40px; border: 1px solid var(--border);
-            backdrop-filter: blur(15px);
-        }
-
-        .biomarker-input {
-            margin-top: 20px; padding: 20px; border-radius: 20px;
-            background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.05);
-            transition: 0.3s; display: flex; justify-content: space-between;
-            align-items: center;
-        }
-        .biomarker-input:hover {
-            background: rgba(0,0,0,0.3); border-color: var(--blue);
-            box-shadow: 0 4px 20px rgba(59, 130, 246, 0.2);
-        }
-        .biomarker-label {
-            font-size: 13px; font-weight: 900; color: var(--text-muted);
-            text-transform: uppercase; letter-spacing: 1px;
-        }
-        .biomarker-label::before {
-            content: attr(data-icon); font-size: 20px; margin-right: 10px;
-        }
-        input[type="number"] { 
-            background: rgba(255,255,255,0.08); border: 2px solid var(--border); 
-            color: #fff; padding: 15px 20px; border-radius: 16px; 
-            font-family: 'JetBrains Mono'; width: 120px; text-align: center; 
-            font-size: 24px; outline: none; transition: 0.3s; font-weight: 900;
-        }
-        input[type="number"]:focus { 
-            border-color: var(--blue); 
-            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
-            background: rgba(255,255,255,0.12);
-        }
-
-        /* Mixing Animation */
-        .mixer-center {
-            display: flex; flex-direction: column; align-items: center;
-            justify-content: center; text-align: center;
-        }
-        .mixing-orb {
-            width: 200px; height: 200px; border-radius: 50%;
-            background: radial-gradient(circle, rgba(59, 130, 246, 0.3), transparent);
-            display: flex; align-items: center; justify-content: center;
-            position: relative; animation: orb-pulse 3s infinite;
-            margin: 30px 0;
-        }
-        @keyframes orb-pulse {
-            0%, 100% { transform: scale(1); box-shadow: 0 0 50px rgba(59, 130, 246, 0.5); }
-            50% { transform: scale(1.1); box-shadow: 0 0 80px rgba(59, 130, 246, 0.8); }
-        }
-        .mixing-symbol { 
-            font-size: 80px; animation: spin 6s linear infinite;
-            filter: drop-shadow(0 0 30px var(--blue));
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
-
-        .tension-value {
-            font-size: 90px; font-weight: 900; font-family: 'JetBrains Mono';
-            color: var(--emerald); margin: 20px 0;
-            text-shadow: 0 0 60px currentColor; line-height: 1;
-        }
-        .tension-label {
-            font-size: 12px; font-weight: 900; text-transform: uppercase;
-            letter-spacing: 2px; color: var(--text-muted);
-        }
-        .formula-display {
-            margin-top: 20px; padding: 15px; background: rgba(0,0,0,0.3);
-            border-radius: 15px; font-family: 'JetBrains Mono'; font-size: 11px;
-            color: var(--amber); border: 1px solid rgba(245, 158, 11, 0.2);
-        }
-
-        /* Status Badge */
-        .status-badge {
-            padding: 15px 30px; border-radius: 30px; font-size: 13px;
-            font-weight: 900; text-transform: uppercase; letter-spacing: 1.5px;
-            margin: 25px 0; box-shadow: 0 4px 20px currentColor;
-            display: inline-block;
-        }
-
-        /* ============ PHASE 3: INTERACTIVE GRAPH ============ */
-        .graph-container {
-            background: linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%);
-            border-radius: 50px; padding: 60px; width: 100%; max-width: 1300px;
-            border: 1px solid var(--border); backdrop-filter: blur(15px);
-        }
-
-        .graph-header {
-            display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 50px; flex-wrap: wrap; gap: 20px;
-        }
-        .graph-title h2 {
-            font-size: 38px; font-weight: 900; letter-spacing: -1px;
-        }
-        .graph-subtitle {
-            font-family: 'Noto Sans Arabic'; font-size: 18px;
-            color: var(--cyan); margin-top: 8px;
-        }
-
-        .svg-graph { 
-            width: 100%; height: 500px; overflow: visible; 
-            cursor: crosshair; border-radius: 20px;
-            background: rgba(0,0,0,0.2);
-        }
-
-        /* Interactive Marker */
-        .marker-dot { 
-            cursor: grab; transition: 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
-            filter: drop-shadow(0 0 30px currentColor);
-        }
-        .marker-dot:hover { 
-            r: 25; cursor: pointer;
-            filter: drop-shadow(0 0 50px currentColor);
-        }
-        .marker-dot:active { cursor: grabbing; }
-
-        /* Zone Cards */
-        .zone-grid {
-            display: grid; grid-template-columns: repeat(3, 1fr);
-            gap: 25px; margin-top: 40px;
-        }
-        .zone-card {
-            padding: 30px; border-radius: 25px; text-align: center;
-            border: 2px solid; transition: 0.4s;
-            background: rgba(0,0,0,0.2); backdrop-filter: blur(10px);
-        }
-        .zone-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 12px 40px rgba(0,0,0,0.4);
-        }
-        .zone-icon {
-            font-size: 48px; margin-bottom: 15px; display: block;
-            filter: drop-shadow(0 0 20px currentColor);
-        }
-        .zone-title {
-            font-size: 16px; font-weight: 900; margin-bottom: 12px;
-            text-transform: uppercase; letter-spacing: 1px;
-        }
-        .zone-desc {
-            font-size: 13px; line-height: 1.7; opacity: 0.9;
-        }
-
-        /* ============ PHASE 4: GANGRENE DEEP DIVE ============ */
-        .gangrene-report {
-            width: 100%; max-width: 1400px;
-            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
-            color: #0a0e27; border-radius: 50px; padding: 70px;
-            box-shadow: 0 50px 200px rgba(0,0,0,0.6);
-            border: 3px solid #e2e8f0;
-        }
-
-        .report-grid {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 60px;
-        }
-
-        /* Risk Score Display */
-        .risk-display {
-            text-align: center; padding: 40px;
-            background: linear-gradient(135deg, #fef2f2 0%, #fff 100%);
-            border-radius: 35px; border: 3px solid #fecaca;
-            box-shadow: inset 0 2px 20px rgba(239, 68, 68, 0.1);
-        }
-        .risk-icon {
-            font-size: 80px; margin-bottom: 20px;
-            animation: danger-pulse 2s infinite;
-        }
-        @keyframes danger-pulse {
-            0%, 100% { transform: scale(1); filter: drop-shadow(0 0 20px #ef4444); }
-            50% { transform: scale(1.1); filter: drop-shadow(0 0 40px #ef4444); }
-        }
-        .risk-score {
-            font-size: 120px; font-weight: 900; font-family: 'JetBrains Mono';
-            color: #dc2626; line-height: 1; text-shadow: 0 4px 20px rgba(220, 38, 38, 0.3);
-        }
-        .risk-label {
-            font-size: 14px; font-weight: 900; text-transform: uppercase;
-            color: #991b1b; letter-spacing: 2px; margin-top: 15px;
-        }
-
-        /* Metrics Grid */
-        .metrics-grid {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
-            margin-top: 30px;
-        }
-        .metric-box {
-            padding: 25px; border-radius: 20px; text-align: center;
-            background: #f8fafc; border: 2px solid #e2e8f0;
-            transition: 0.3s;
-        }
-        .metric-box:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 30px rgba(0,0,0,0.15);
-            border-color: #cbd5e1;
-        }
-        .metric-label {
-            font-size: 11px; color: #64748b; text-transform: uppercase;
-            letter-spacing: 1px; margin-bottom: 10px; font-weight: 800;
-        }
-        .metric-value {
-            font-family: 'JetBrains Mono'; font-size: 36px; font-weight: 900;
-        }
-
-        /* Pathology Section */
-        .pathology-section h3 {
-            font-size: 32px; font-weight: 900; margin-bottom: 20px;
-            color: #0a0e27; display: flex; align-items: center; gap: 15px;
-        }
-        .pathology-section h3::before {
-            content: '⚠️'; font-size: 40px;
-        }
-
-        /* Formula Breakdown */
-        .formula-breakdown {
-            background: #1e293b; color: #fff; padding: 35px;
-            border-radius: 25px; margin: 30px 0;
-            border: 3px solid #334155;
-        }
-        .formula-title {
-            font-size: 14px; font-weight: 900; color: var(--amber);
-            text-transform: uppercase; letter-spacing: 2px;
-            margin-bottom: 20px; display: flex; align-items: center; gap: 10px;
-        }
-        .formula-title::before { content: '🧮'; font-size: 24px; }
-
-        .formula-line {
-            font-family: 'JetBrains Mono'; font-size: 16px;
-            padding: 15px; background: rgba(255,255,255,0.05);
-            border-radius: 12px; margin: 15px 0;
-            border-left: 4px solid var(--cyan);
-            transition: 0.3s;
-        }
-        .formula-line:hover {
-            background: rgba(255,255,255,0.1);
-            transform: translateX(5px);
-        }
-        .formula-var {
-            color: var(--emerald); font-weight: 900;
-        }
-        .formula-result {
-            color: var(--rose); font-weight: 900; font-size: 20px;
-        }
-
-        /* Mechanism Steps */
-        .mechanism-steps {
-            margin: 30px 0;
-        }
-        .step {
-            padding: 25px; margin: 20px 0; border-radius: 20px;
-            background: #f1f5f9; border-left: 5px solid;
-            transition: 0.3s;
-        }
-        .step:hover {
-            transform: translateX(10px);
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-        }
-        .step-number {
-            font-size: 32px; font-weight: 900; font-family: 'JetBrains Mono';
-            margin-bottom: 10px; opacity: 0.3;
-        }
-        .step-title {
-            font-size: 16px; font-weight: 900; margin-bottom: 10px;
-            text-transform: uppercase; letter-spacing: 1px;
-        }
-        .step-desc {
-            font-size: 14px; line-height: 1.8; color: #475569;
-        }
-
-        /* Evidence Pills */
-        .evidence-pills {
-            display: flex; flex-wrap: wrap; gap: 15px; margin: 30px 0;
-        }
-        .evidence-pill {
-            padding: 12px 24px; border-radius: 25px;
-            background: linear-gradient(135deg, #dbeafe, #e0e7ff);
-            border: 2px solid #93c5fd; font-size: 11px; font-weight: 900;
-            text-transform: uppercase; letter-spacing: 0.5px;
-            color: #1e40af; transition: 0.3s; cursor: pointer;
-        }
-        .evidence-pill:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.3);
-        }
-
-        /* Regional Context Box */
-        .gcc-context {
-            background: linear-gradient(135deg, #fef3c7 0%, #fef9e7 100%);
-            padding: 35px; border-radius: 25px; margin: 30px 0;
-            border: 3px solid #fbbf24;
-        }
-        .gcc-icon {
-            font-size: 48px; margin-bottom: 15px;
-        }
-        .gcc-title {
-            font-size: 18px; font-weight: 900; color: #92400e;
-            margin-bottom: 15px; text-transform: uppercase;
-        }
-        .gcc-desc {
-            font-size: 14px; line-height: 1.9; color: #78350f;
-        }
-
-        /* Back to Top */
-        .btn-restart {
-            width: 100%; padding: 25px; border-radius: 50px;
-            background: linear-gradient(135deg, var(--indigo), var(--purple));
-            color: #fff; font-size: 14px; font-weight: 900;
-            text-transform: uppercase; letter-spacing: 2px;
-            cursor: pointer; border: none; margin-top: 40px;
-            box-shadow: 0 8px 30px rgba(99, 102, 241, 0.4);
-            transition: 0.4s;
-        }
-        .btn-restart:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 50px rgba(99, 102, 241, 0.6);
-        }
-
-        /* Responsive - Mobile First */
-        @media (max-width: 1400px) {
-            .guardian-grid, .mixer-layout, .report-grid { 
-                grid-template-columns: 1fr; gap: 30px;
-            }
-            .mega-dial { width: 280px; height: 280px; }
-            .dial-value { font-size: 72px; }
-        }
-
-        @media (max-width: 768px) {
-            /* Header mobile */
-            header { 
-                padding: 15px 20px; 
-                flex-direction: column; 
-                gap: 12px;
-                align-items: stretch;
-            }
-            .brand { justify-content: center; }
-            .brand-icon { width: 40px; height: 40px; font-size: 20px; }
-            .brand h1 { font-size: 16px; }
-            .header-stats { 
-                flex-direction: row; 
-                justify-content: space-around; 
-                gap: 10px;
-                flex-wrap: wrap;
-            }
-            .stat-pill { 
-                padding: 8px 15px; 
-                font-size: 10px;
-                flex: 1;
-                min-width: 100px;
-                text-align: center;
-            }
-            .stat-pill span { font-size: 14px; }
-            
-            /* Progress nav mobile */
-            .progress-nav { 
-                top: 120px; 
-                padding: 10px 20px;
-                gap: 8px;
-            }
-            .nav-dot { width: 10px; height: 10px; }
-            .nav-dot.active { width: 30px; }
-            
-            /* Compute overlay mobile */
-            #compute-overlay > div {
-                padding: 20px;
-            }
-            #compute-overlay > div > div:first-child {
-                width: 80px !important;
-                height: 80px !important;
-                font-size: 40px !important;
-            }
-            #compute-overlay > div > div:nth-child(2) {
-                font-size: 20px !important;
-            }
-            #compute-steps-display {
-                min-width: auto !important;
-                max-width: 90vw !important;
-                padding: 20px !important;
-                font-size: 12px !important;
-            }
-            #compute-overlay > div > div:nth-child(4) {
-                width: 90vw !important;
-                max-width: 400px !important;
-            }
-            
-            /* Math Engine mobile */
-            div[onclick*="math-note"] {
-                bottom: 15px !important;
-                right: 50% !important;
-                transform: translateX(50%) !important;
-                padding: 12px 18px !important;
-            }
-            #math-note {
-                bottom: 70px !important;
-                right: 10px !important;
-                left: 10px !important;
-                max-width: none !important;
-            }
-            
-            /* Stage mobile */
-            .stage { 
-                padding: 180px 15px 40px 15px; 
-            }
-            
-            /* Dial mobile */
-            .mega-dial { width: 240px; height: 240px; }
-            .dial-value { font-size: 58px; }
-            .dial-icon { font-size: 38px; }
-            
-            /* Cards mobile */
-            .info-card, .mixer-column, .control-panel {
-                padding: 25px 20px;
-                border-radius: 20px;
-            }
-            
-            /* Sliders mobile */
-            .slider-group { padding: 20px 15px; }
-            .slider-value { font-size: 20px; }
-            .custom-slider { height: 12px; }
-            
-            /* Inputs mobile */
-            input[type="number"] {
-                width: 90px;
-                font-size: 20px;
-                padding: 12px 15px;
-            }
-            
-            /* Graph mobile */
-            .trajectory-graph { height: 400px; }
-            svg { max-height: 400px; }
-            
-            /* Zone cards mobile */
-            .zone-grid { 
-                grid-template-columns: 1fr; 
-                gap: 20px;
-            }
-            .zone-card { padding: 25px 20px; }
-            .zone-icon { font-size: 42px; }
-            
-            /* Metrics mobile */
-            .metrics-grid { 
-                grid-template-columns: 1fr; 
-                gap: 15px;
-            }
-            
-            /* Report mobile */
-            .analysis-report { 
-                padding: 40px 20px;
-                border-radius: 30px;
-            }
-            .risk-percentage { font-size: 80px; }
-            .mechanism-step { padding: 20px 15px; }
-            
-            /* Buttons mobile */
-            .btn-phase, .btn-restart {
-                padding: 18px 30px;
-                font-size: 11px;
-            }
-            
-            /* Typography mobile */
-            h2 { font-size: 28px; }
-            h3 { font-size: 22px; }
-            .section-title { font-size: 32px; }
-            
-            /* Touch targets */
-            button, input, select, a {
-                min-height: 44px;
-                min-width: 44px;
-            }
-        }
-        
-        /* Small mobile phones */
-        @media (max-width: 480px) {
-            .mega-dial { width: 200px; height: 200px; }
-            .dial-value { font-size: 48px; }
-            .tension-display { font-size: 52px; }
-            .risk-percentage { font-size: 64px; }
-            
-            .header-stats {
-                flex-direction: column;
-            }
-            .stat-pill {
-                width: 100%;
-            }
-        }
-
-        /* Loading Spinner */
-        .loading {
-            display: inline-block; width: 20px; height: 20px;
-            border: 3px solid rgba(255,255,255,0.1);
-            border-top-color: var(--blue); border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-
-        /* Enhanced Animations */
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.08); }
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        /* Smooth scroll */
-        html { scroll-behavior: smooth; }
-
-        /* Selection */
-        ::selection {
-            background: var(--blue); color: #fff;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Ramadan Co-Pilot | BURAK Engine v2.0 PRO</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#050508;--bg2:#0a0a12;--card:#0d0d18;--card2:#12121f;--el:#181828;--border:#252540;--border2:#353560;--cyan:#00d4ff;--emerald:#00ff88;--amber:#ffb800;--rose:#ff3366;--purple:#9945ff;--gold:#ffd700;--text:#f0f4ff;--dim:#a0a8c0;--muted:#606880}
+body{font-family:system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px}
+.bg-effects{position:fixed;top:0;left:0;right:0;bottom:0;pointer-events:none;z-index:0}
+.bg-orb{position:absolute;border-radius:50%;filter:blur(100px);opacity:0.12;animation:float 20s ease-in-out infinite}
+.bg-orb.o1{width:500px;height:500px;background:var(--cyan);top:-200px;left:-200px}
+.bg-orb.o2{width:400px;height:400px;background:var(--purple);bottom:-150px;right:-150px;animation-delay:-7s}
+@keyframes float{0%,100%{transform:translate(0,0)}50%{transform:translate(30px,30px)}}
+.top-nav{position:sticky;top:0;z-index:100;background:rgba(5,5,8,0.95);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:12px 20px}
+.top-inner{max-width:1800px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px}
+.brand-icon{width:44px;height:44px;background:linear-gradient(135deg,var(--gold),var(--amber));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px}
+.brand h1{font-size:16px;background:linear-gradient(90deg,var(--gold),var(--amber));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.brand span{font-size:9px;color:var(--purple);display:block}
+.top-stats{display:flex;gap:10px}
+.top-stat{background:var(--el);border:1px solid var(--border);border-radius:8px;padding:8px 14px;text-align:center;min-width:80px}
+.top-stat-val{font-size:16px;font-weight:700}
+.top-stat-val.pos{color:var(--emerald)}
+.top-stat-val.neg{color:var(--rose)}
+.top-stat-lbl{font-size:8px;color:var(--muted);margin-top:2px;text-transform:uppercase}
+.mode-ind{display:flex;align-items:center;gap:6px;padding:8px 14px;border-radius:8px;font-size:12px;font-weight:600}
+.mode-ind.deficit{background:rgba(0,255,136,0.1);border:1px solid var(--emerald);color:var(--emerald)}
+.mode-ind.surplus{background:rgba(255,51,102,0.1);border:1px solid var(--rose);color:var(--rose)}
+.mode-ind .dot{width:6px;height:6px;border-radius:50%;animation:pulse 2s infinite}
+.mode-ind.deficit .dot{background:var(--emerald)}
+.mode-ind.surplus .dot{background:var(--rose)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
+.main{display:grid;grid-template-columns:380px 1fr;min-height:calc(100vh - 70px);position:relative;z-index:1}
+@media(max-width:1000px){.main{grid-template-columns:1fr}}
+.panel{background:var(--card);border-right:1px solid var(--border);padding:20px;overflow-y:auto;max-height:calc(100vh - 70px)}
+.section{margin-bottom:20px}
+.sec-head{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.sec-icon{width:28px;height:28px;background:var(--el);border:1px solid var(--border);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:12px}
+.sec-title{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px}
+.sec-badge{font-size:8px;padding:2px 6px;background:var(--purple);color:#fff;border-radius:3px}
+.input-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.input-card{background:var(--el);border:2px solid var(--border);border-radius:10px;padding:12px;transition:all 0.3s}
+.input-card:focus-within{border-color:var(--cyan)}
+.input-card input{width:100%;background:transparent;border:none;font-size:24px;font-weight:700;color:var(--text);text-align:center}
+.input-card input:focus{outline:none}
+.input-card label{display:block;font-size:9px;color:var(--muted);text-align:center;margin-top:4px;text-transform:uppercase}
+.slider-card{background:var(--el);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:10px}
+.slider-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}
+.slider-info .lbl{font-size:11px;color:var(--dim)}
+.slider-info .sub{font-size:9px;color:var(--muted)}
+.slider-val{font-size:28px;font-weight:700}
+.slider-val.cal{color:var(--amber)}
+.slider-val.fast{color:var(--cyan)}
+.slider-val .unit{font-size:11px;color:var(--muted)}
+.slider-track{height:6px;background:var(--border);border-radius:3px;margin-bottom:6px;position:relative}
+.slider-fill{position:absolute;height:100%;border-radius:3px}
+.slider-fill.cal{background:linear-gradient(90deg,#cc9300,var(--amber))}
+.slider-fill.fast{background:linear-gradient(90deg,#00a8cc,var(--cyan))}
+input[type=range]{width:100%;height:6px;-webkit-appearance:none;background:transparent;margin-top:-6px;position:relative;z-index:2}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;background:var(--text);border-radius:50%;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.3)}
+.slider-marks{display:flex;justify-content:space-between;font-size:8px;color:var(--muted)}
+.act-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.act-btn{padding:10px 6px;background:var(--el);border:2px solid var(--border);border-radius:8px;cursor:pointer;text-align:center;transition:all 0.3s}
+.act-btn:hover{border-color:var(--border2)}
+.act-btn.active{border-color:var(--gold);background:rgba(255,215,0,0.1)}
+.act-btn .ico{font-size:18px}
+.act-btn .name{font-size:9px;font-weight:600;color:var(--dim);margin-top:2px}
+.act-btn.active .name{color:var(--gold)}
+.act-btn .mult{font-size:7px;color:var(--muted)}
+.flags{display:flex;gap:6px;margin-top:10px}
+.flag{flex:1;padding:10px;background:var(--el);border:2px solid var(--border);border-radius:8px;cursor:pointer;text-align:center;transition:all 0.3s}
+.flag.active{border-color:var(--rose);background:rgba(255,51,102,0.1)}
+.flag .ico{font-size:14px}
+.flag .txt{font-size:8px;color:var(--dim);margin-top:2px}
+.flag.active .txt{color:var(--rose)}
+.summary{background:var(--card2);border:2px solid var(--border);border-radius:14px;padding:16px;margin-bottom:16px;position:relative;overflow:hidden}
+.summary::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.summary.deficit::before{background:linear-gradient(90deg,var(--emerald),var(--cyan))}
+.summary.surplus::before{background:linear-gradient(90deg,var(--rose),var(--amber))}
+.sum-eq{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+.sum-term{text-align:center}
+.sum-term .val{font-size:24px;font-weight:700}
+.sum-term .val.burn{color:var(--cyan)}
+.sum-term .val.eat{color:var(--amber)}
+.sum-term .val.gap{color:var(--emerald)}
+.sum-term .val.excess{color:var(--rose)}
+.sum-term .lbl{font-size:8px;color:var(--muted);text-transform:uppercase}
+.sum-op{font-size:18px;color:var(--muted)}
+.sum-msg{text-align:center;padding:10px 12px;border-radius:8px;font-size:11px;font-weight:600}
+.sum-msg.good{background:rgba(0,255,136,0.1);border:1px solid rgba(0,255,136,0.3);color:var(--emerald)}
+.sum-msg.bad{background:rgba(255,51,102,0.1);border:1px solid rgba(255,51,102,0.3);color:var(--rose)}
+.calc-btn{width:100%;padding:16px;background:linear-gradient(135deg,var(--gold),var(--amber));border:none;border-radius:12px;font-size:14px;font-weight:700;color:#000;cursor:pointer;transition:all 0.3s;display:flex;align-items:center;justify-content:center;gap:8px}
+.calc-btn:hover{transform:translateY(-2px);box-shadow:0 0 30px rgba(255,215,0,0.3)}
+.dash{padding:20px;overflow-y:auto;max-height:calc(100vh - 70px);background:linear-gradient(135deg,var(--bg),var(--bg2))}
+.welcome{text-align:center;padding:60px 30px;max-width:450px;margin:0 auto}
+.welcome-icon{width:80px;height:80px;background:linear-gradient(135deg,var(--gold),var(--purple));border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:40px;margin:0 auto 20px}
+.welcome h2{font-size:24px;margin-bottom:10px}
+.welcome p{font-size:13px;color:var(--dim);line-height:1.5}
+.welcome-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:24px;text-align:left}
+.welcome-feat{background:var(--el);border:1px solid var(--border);border-radius:10px;padding:14px}
+.welcome-feat .ico{font-size:20px;margin-bottom:6px}
+.welcome-feat .title{font-size:11px;font-weight:600}
+.welcome-feat .desc{font-size:9px;color:var(--muted)}
+.res-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:12px}
+.res-title{font-size:20px;font-weight:700}
+.day-sel{display:flex;align-items:center;gap:10px;background:var(--el);border:1px solid var(--border);border-radius:10px;padding:8px 14px}
+.day-sel label{font-size:10px;color:var(--muted)}
+.day-sel input{width:120px}
+.day-badge{background:linear-gradient(135deg,var(--gold),var(--amber));padding:6px 12px;border-radius:6px;font-weight:700;color:#000;font-size:13px}
+.state-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:16px}
+.state-head{font-size:12px;font-weight:700;color:var(--purple);margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.state-head::before{content:'';width:3px;height:14px;background:var(--purple);border-radius:2px}
+.state-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+@media(max-width:700px){.state-grid{grid-template-columns:repeat(3,1fr)}}
+.state-item{background:var(--el);border:1px solid var(--border);border-radius:10px;padding:12px;text-align:center;cursor:pointer;transition:all 0.3s}
+.state-item:hover{transform:translateY(-2px);border-color:var(--border2)}
+.state-item .ico{font-size:20px;margin-bottom:6px}
+.state-item .val{font-size:18px;font-weight:700}
+.state-item .val.good{color:var(--emerald)}
+.state-item .val.bad{color:var(--rose)}
+.state-item .lbl{font-size:8px;color:var(--muted);margin-top:2px;text-transform:uppercase}
+.cascade-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:16px}
+.cascade-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.cascade-title{font-size:12px;font-weight:700;color:var(--cyan);display:flex;align-items:center;gap:6px}
+.cascade-title::before{content:'';width:3px;height:14px;background:var(--cyan);border-radius:2px}
+.cascade-legend{display:flex;gap:12px;font-size:9px;color:var(--muted)}
+.cascade-legend span{display:flex;align-items:center;gap:3px}
+.cascade-legend .dot{width:6px;height:6px;border-radius:50%}
+.cascade-legend .dot.good{background:var(--emerald)}
+.cascade-legend .dot.bad{background:var(--rose)}
+.cascade-flow{display:flex;flex-direction:column;gap:3px}
+.casc-step{display:grid;grid-template-columns:36px 1fr 100px 70px;align-items:center;gap:10px;padding:12px;background:var(--el);border-radius:10px;border-left:3px solid var(--border);cursor:pointer;transition:all 0.3s}
+.casc-step:hover{background:var(--card2);transform:translateX(3px)}
+.casc-step.good{border-left-color:var(--emerald)}
+.casc-step.bad{border-left-color:var(--rose)}
+.casc-num{width:24px;height:24px;background:var(--border);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700}
+.casc-step.good .casc-num{background:rgba(0,255,136,0.2);color:var(--emerald)}
+.casc-step.bad .casc-num{background:rgba(255,51,102,0.2);color:var(--rose)}
+.casc-info{min-width:0}
+.casc-name{font-size:12px;font-weight:600;display:flex;align-items:center;gap:6px}
+.casc-formula{font-size:8px;color:var(--purple);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.casc-bar{height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+.casc-fill{height:100%;border-radius:3px}
+.casc-fill.good{background:linear-gradient(90deg,#00cc6a,var(--emerald))}
+.casc-fill.bad{background:linear-gradient(90deg,#cc2952,var(--rose))}
+.casc-val{font-size:14px;font-weight:700;text-align:right}
+.casc-val.good{color:var(--emerald)}
+.casc-val.bad{color:var(--rose)}
+.casc-arrow{text-align:center;color:var(--border2);font-size:10px;padding:1px 0}
+.deep-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px}
+@media(max-width:800px){.deep-grid{grid-template-columns:1fr}}
+.deep-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;position:relative;overflow:hidden}
+.deep-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.deep-card.insulin::before{background:linear-gradient(90deg,var(--purple),var(--cyan))}
+.deep-card.liver::before{background:linear-gradient(90deg,var(--amber),var(--rose))}
+.deep-card.gut::before{background:linear-gradient(90deg,var(--emerald),var(--cyan))}
+.deep-card.inflammation::before{background:linear-gradient(90deg,var(--rose),var(--purple))}
+.deep-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px}
+.deep-title{display:flex;align-items:center;gap:8px}
+.deep-title .ico{width:36px;height:36px;background:var(--el);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px}
+.deep-title h3{font-size:13px;font-weight:700}
+.deep-title span{font-size:9px;color:var(--muted);display:block}
+.deep-value .num{font-size:24px;font-weight:700}
+.deep-value .num.good{color:var(--emerald)}
+.deep-value .num.bad{color:var(--rose)}
+.deep-value .unit{font-size:10px;color:var(--muted)}
+.deep-gauge{height:6px;background:var(--border);border-radius:3px;margin-bottom:12px;position:relative;overflow:hidden}
+.deep-gauge-marker{position:absolute;top:-3px;bottom:-3px;width:3px;background:var(--text);border-radius:2px}
+.deep-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.deep-metric{background:var(--el);border-radius:6px;padding:8px;text-align:center}
+.deep-metric .v{font-size:12px;font-weight:700}
+.deep-metric .v.good{color:var(--emerald)}
+.deep-metric .v.bad{color:var(--rose)}
+.deep-metric .l{font-size:7px;color:var(--muted);margin-top:1px;text-transform:uppercase}
+.deep-insight{background:var(--el);border-radius:8px;padding:12px}
+.deep-insight-title{font-size:9px;font-weight:700;color:var(--cyan);margin-bottom:6px;text-transform:uppercase}
+.deep-insight-text{font-size:10px;color:var(--dim);line-height:1.5}
+.deep-insight-text strong{color:var(--text)}
+.disease-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:16px}
+.disease-head{font-size:12px;font-weight:700;color:var(--rose);margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.disease-head::before{content:'';width:3px;height:14px;background:var(--rose);border-radius:2px}
+.disease-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+@media(max-width:600px){.disease-grid{grid-template-columns:repeat(2,1fr)}}
+.dis-item{background:var(--el);border:2px solid var(--border);border-radius:12px;padding:14px;text-align:center;cursor:pointer;transition:all 0.3s}
+.dis-item:hover{transform:translateY(-3px)}
+.dis-item.good{border-color:var(--emerald);background:rgba(0,255,136,0.05)}
+.dis-item.bad{border-color:var(--rose);background:rgba(255,51,102,0.05)}
+.dis-item .ico{font-size:28px;margin-bottom:8px}
+.dis-item .name{font-size:9px;font-weight:600;color:var(--dim);margin-bottom:6px;text-transform:uppercase}
+.dis-item .val{font-size:20px;font-weight:700}
+.dis-item .val.good{color:var(--emerald)}
+.dis-item .val.bad{color:var(--rose)}
+.dis-item .trend{font-size:9px;margin-top:4px;padding:3px 6px;border-radius:3px;display:inline-block}
+.dis-item .trend.good{background:rgba(0,255,136,0.2);color:var(--emerald)}
+.dis-item .trend.bad{background:rgba(255,51,102,0.2);color:var(--rose)}
+.story-card{background:linear-gradient(135deg,var(--card),var(--card2));border:2px solid var(--gold);border-radius:14px;padding:20px;margin-bottom:16px;position:relative;overflow:hidden}
+.story-card::after{content:'🌙';position:absolute;top:16px;right:16px;font-size:50px;opacity:0.1}
+.story-head{font-size:14px;font-weight:700;color:var(--gold);margin-bottom:12px}
+.story-text{font-size:12px;line-height:1.7;color:var(--dim)}
+.story-text strong{color:var(--text)}
+.story-text .hl{color:var(--emerald);font-weight:600}
+.story-text .warn{color:var(--rose);font-weight:600}
+.report-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:16px}
+.report-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px}
+.report-title{font-size:12px;font-weight:700;color:var(--amber);display:flex;align-items:center;gap:6px}
+.report-title::before{content:'';width:3px;height:14px;background:var(--amber);border-radius:2px}
+.report-btns{display:flex;gap:6px}
+.report-btn{padding:8px 12px;background:var(--el);border:1px solid var(--border);border-radius:6px;font-size:10px;font-weight:600;color:var(--dim);cursor:pointer;transition:all 0.3s}
+.report-btn:hover{border-color:var(--border2);color:var(--text)}
+.report-btn.primary{background:linear-gradient(135deg,var(--amber),var(--gold));color:#000;border:none}
+.report-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
+@media(max-width:550px){.report-summary{grid-template-columns:1fr}}
+.rpt-card{background:var(--el);border-radius:10px;padding:14px}
+.rpt-card-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.rpt-card-title{font-size:10px;color:var(--muted);text-transform:uppercase}
+.rpt-card-badge{font-size:8px;padding:2px 6px;border-radius:3px;font-weight:600}
+.rpt-card-badge.good{background:rgba(0,255,136,0.2);color:var(--emerald)}
+.rpt-card-badge.bad{background:rgba(255,51,102,0.2);color:var(--rose)}
+.rpt-card-val{font-size:28px;font-weight:700;margin-bottom:2px}
+.rpt-card-val.good{color:var(--emerald)}
+.rpt-card-val.bad{color:var(--rose)}
+.rpt-card-desc{font-size:9px;color:var(--muted)}
+.report-recs{background:var(--el);border-radius:10px;padding:14px}
+.recs-title{font-size:10px;font-weight:700;color:var(--cyan);margin-bottom:10px;text-transform:uppercase}
+.recs-list{display:flex;flex-direction:column;gap:6px}
+.rec-item{display:flex;gap:8px;padding:8px;background:var(--card);border-radius:6px}
+.rec-item .ico{width:24px;height:24px;background:var(--el);border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0}
+.rec-item .txt{font-size:10px;color:var(--dim);line-height:1.4}
+.rec-item .txt strong{color:var(--text)}
+.modal-bg{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.9);display:flex;align-items:center;justify-content:center;z-index:200;opacity:0;pointer-events:none;transition:opacity 0.3s;backdrop-filter:blur(10px)}
+.modal-bg.show{opacity:1;pointer-events:all}
+.modal{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;max-width:480px;width:90%;max-height:80vh;overflow-y:auto}
+.modal.good{border-color:var(--emerald)}
+.modal.bad{border-color:var(--rose)}
+.modal-close{float:right;width:28px;height:28px;background:var(--el);border:1px solid var(--border);border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;color:var(--muted)}
+.modal-close:hover{background:var(--rose);color:#fff}
+.modal-ico{font-size:40px;text-align:center;margin-bottom:12px;clear:both}
+.modal-title{font-size:18px;font-weight:700;text-align:center;margin-bottom:6px}
+.modal-sub{font-size:11px;color:var(--muted);text-align:center;margin-bottom:16px}
+.modal-val{font-size:40px;font-weight:700;text-align:center;margin-bottom:6px}
+.modal-val.good{color:var(--emerald)}
+.modal-val.bad{color:var(--rose)}
+.modal-status{text-align:center;padding:8px 12px;border-radius:6px;font-size:11px;font-weight:600;margin-bottom:16px}
+.modal-status.good{background:rgba(0,255,136,0.1);border:1px solid var(--emerald);color:var(--emerald)}
+.modal-status.bad{background:rgba(255,51,102,0.1);border:1px solid var(--rose);color:var(--rose)}
+.modal-section{background:var(--el);border-radius:10px;padding:14px;margin-bottom:10px}
+.modal-section-title{font-size:9px;font-weight:700;color:var(--cyan);margin-bottom:6px;text-transform:uppercase}
+.modal-section-text{font-size:11px;color:var(--dim);line-height:1.5}
+.modal-section-text strong{color:var(--text)}
+.modal-formula{font-family:monospace;font-size:10px;color:var(--purple);background:var(--bg);padding:10px;border-radius:6px;margin-top:8px;overflow-x:auto}
+.loading-bg{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.95);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:300;opacity:0;pointer-events:none;transition:opacity 0.3s}
+.loading-bg.show{opacity:1;pointer-events:all}
+.spinner{width:50px;height:50px;border:3px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{margin-top:16px;font-size:13px;font-weight:600;color:var(--gold)}
+.loading-step{margin-top:6px;font-size:10px;color:var(--muted)}
+</style>
 </head>
 <body>
-    <div class="particle-bg"></div>
-
-    <div class="story-canvas">
-        <!-- Enhanced Header -->
-        <header>
-            <div class="brand">
-                <div class="brand-icon">🛡️</div>
-                <div>
-                    <h1>BURAK</h1>
-                    <div style="font-size: 11px; color: var(--text-muted); font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin-top: 3px;">
-                        Al-Mohafiz Deep Dive
-                    </div>
-                    <div class="arabic-sub">محرك رياضي خالص | Zero AI Inference</div>
-                </div>
-            </div>
-            <div class="header-stats">
-                <div class="stat-pill">
-                    Guardian <span id="header-shannon">3.82</span>
-                </div>
-                <div class="stat-pill">
-                    Tension <span id="header-tension">1.0x</span>
-                </div>
-                <button onclick="nextPhase(1)" style="padding: 10px 20px; border-radius: 20px; 
-                        background: rgba(99, 102, 241, 0.15); border: 2px solid var(--indigo);
-                        color: var(--indigo); font-size: 11px; font-weight: 800; 
-                        text-transform: uppercase; letter-spacing: 1px; cursor: pointer;
-                        transition: 0.3s;"
-                        onmouseover="this.style.background='var(--indigo)'; this.style.color='#fff';"
-                        onmouseout="this.style.background='rgba(99, 102, 241, 0.15)'; this.style.color='var(--indigo)';">
-                    ← Back to Start
-                </button>
-            </div>
-        </header>
-
-        <!-- Progress Navigation -->
-        <div class="progress-nav">
-            <div class="nav-dot active" onclick="jumpPhase(1)">
-                <span class="nav-label">🛡️ Guardian</span>
-            </div>
-            <div class="nav-dot" onclick="jumpPhase(2)">
-                <span class="nav-label">🔄 Mixer</span>
-            </div>
-            <div class="nav-dot" onclick="jumpPhase(3)">
-                <span class="nav-label">📈 Trajectory</span>
-            </div>
-            <div class="nav-dot" onclick="jumpPhase(4)">
-                <span class="nav-label">⚠️ Risk Analysis</span>
-            </div>
-        </div>
-
-        <!-- Math Engine Display -->
-        <div style="position: fixed; bottom: 30px; right: 30px; z-index: 2800;
-                    background: rgba(5, 7, 10, 0.95); backdrop-filter: blur(20px);
-                    border: 1px solid var(--border); border-radius: 24px;
-                    padding: 15px 22px; display: flex; align-items: center; gap: 12px;
-                    box-shadow: 0 8px 32px rgba(0,0,0,0.6); cursor: pointer; transition: 0.3s;"
-             onclick="document.getElementById('math-note').style.display = document.getElementById('math-note').style.display === 'none' ? 'block' : 'none';"
-             onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 12px 48px rgba(16, 185, 129, 0.4)';"
-             onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 8px 32px rgba(0,0,0,0.6)';">
-            <div style="width: 32px; height: 32px; border-radius: 8px;
-                        background: linear-gradient(135deg, var(--emerald), var(--cyan));
-                        display: flex; align-items: center; justify-content: center;
-                        font-size: 16px; animation: pulse 2s infinite;">
-                ⚙️
-            </div>
-            <div style="display: flex; flex-direction: column;">
-                <div style="font-size: 9px; color: var(--text-muted); text-transform: uppercase;
-                            letter-spacing: 1.2px; font-weight: 800;">
-                    Math Engine
-                </div>
-                <div style="font-size: 12px; color: var(--emerald); font-weight: 900; font-family: 'JetBrains Mono';">
-                    ACTIVE
-                </div>
-            </div>
-        </div>
-
-        <!-- Math Engine Education Note -->
-        <div id="math-note" style="
-            position: fixed; bottom: 90px; right: 30px; z-index: 2799;
-            background: rgba(5, 7, 10, 0.98); backdrop-filter: blur(25px);
-            border: 2px solid var(--emerald); border-radius: 24px;
-            padding: 24px; max-width: 360px;
-            box-shadow: 0 12px 48px rgba(16, 185, 129, 0.4);
-            font-size: 12px; line-height: 1.9; color: var(--text-primary);
-            display: none; animation: slideUp 0.3s;">
-            <div style="font-weight: 900; color: var(--emerald); margin-bottom: 12px; 
-                        text-transform: uppercase; letter-spacing: 1.5px; font-size: 13px;">
-                🧮 Our Secret Sauce
-            </div>
-            <div style="margin-bottom: 12px;">
-                We use <strong style="color: var(--cyan);">pure mathematics</strong> 
-                (Shannon Entropy, weighted tension formulas) for the heavy lifting.
-            </div>
-            <div style="margin-bottom: 12px;">
-                <strong>AI?</strong> Only for data preprocessing — like a smart 
-                <em style="color: var(--amber);">filing clerk</em> who organizes 
-                papers before the mathematician arrives.
-            </div>
-            <div style="padding: 12px; background: rgba(16, 185, 129, 0.08); 
-                        border-radius: 12px; border-left: 3px solid var(--emerald); margin-bottom: 12px;">
-                <strong style="color: var(--emerald);">Result:</strong><br>
-                • 10x less compute power<br>
-                • 100% transparent results<br>
-                • Zero hallucinations
-            </div>
-            <div style="color: var(--amber); font-weight: 700; font-style: italic; text-align: center;">
-                Math doesn't lie, it calculates.
-            </div>
-            <div style="font-family: 'Noto Sans Arabic'; direction: rtl; text-align: right; 
-                        color: var(--cyan); opacity: 0.9; margin-top: 15px; font-size: 11px; 
-                        padding-top: 15px; border-top: 1px solid var(--border);">
-                نحن نستخدم الرياضيات الخالصة للحسابات الثقيلة. الذكاء الاصطناعي؟ 
-                فقط لتنظيم البيانات - مثل كاتب ذكي ينظم الأوراق قبل وصول عالم الرياضيات.
-            </div>
-        </div>
-
-        <!-- PHASE 1: GUARDIAN -->
-        <section class="stage active" id="phase-1">
-            <div class="guardian-grid">
-                <!-- Left: Dial + Info -->
-                <div>
-                    <div class="mega-dial-container">
-                        <div class="mega-dial" id="mega-dial" title="Your Biological Sovereignty Power">
-                            <div class="dial-icon">🛡️</div>
-                            <div class="dial-label">SOVEREIGNTY INDEX</div>
-                            <div class="dial-value" id="shannon-display">3.82</div>
-                            <div class="dial-status" id="status-badge">PROTECTIVE</div>
-                        </div>
-                    </div>
-
-                    <div class="info-card" style="border-left-color: var(--purple);">
-                        <span class="card-icon">🧬</span>
-                        <div class="card-title">
-                            <span>The Guardian Protocol</span>
-                            <span style="font-family: 'Noto Sans Arabic';">المحافظ</span>
-                        </div>
-                        Think of your gut as a <strong>security system</strong> for your entire body. 
-                        The <strong>Shannon Index (H')</strong> measures how many different "guards" you have on duty.
-                        <br><br>
-                        <strong>Akkermansia</strong> (12%) is your <strong>head of security</strong> 🔐 — 
-                        the glue that keeps your intestinal walls sealed. When this drops below 6%, 
-                        it's like someone cutting your security camera wires — everything else starts failing automatically.
-                        <span class="arabic-text">
-                            أمعائك = نظام أمني. المحافظ يقيس عدد "الحراس" النشطين. 
-                            بكتيريا Akkermansia هي رئيس الأمن (الغراء الحيوي).
-                        </span>
-                    </div>
-
-                    <div class="info-card" style="border-left-color: var(--cyan);">
-                        <span class="card-icon">⚡</span>
-                        <div class="card-title">Why This Matters</div>
-                        Your doctor checks if your blood sugar is high <em>right now</em>. 
-                        We check the <strong>computational load</strong> — how hard your body is working 
-                        behind the scenes to keep those numbers normal.
-                        <br><br>
-                        <strong>High Shannon (H' > 3.5)</strong> = Your body is cruising, minimal effort<br>
-                        <strong>Low Shannon (H' < 2.5)</strong> = Your body is in overdrive, burning out
-                        <span class="arabic-text">
-                            الطبيب يفحص السكر الآن. نحن نفحص جهد جسمك الخفي للحفاظ على التوازن.
-                        </span>
-                    </div>
-
-                    <div class="info-card" style="border-left-color: var(--amber);">
-                        <span class="card-icon">🎮</span>
-                        <div class="card-title">Try This Experiment</div>
-                        Move the <strong>Akkermansia slider</strong> below 6% on the right →
-                        <br><br>
-                        Watch what happens to the other bacteria. They start <em>automatically eroding</em> 
-                        in real-time. This is called <strong>"Cascade Failure"</strong> — 
-                        exactly what happens in your gut over months when the head guard fails.
-                        <span class="arabic-text">
-                            جرّب: حرك مؤشر Akkermansia لأقل من 6٪ وشاهد الانهيار التلقائي.
-                        </span>
-                    </div>
-                </div>
-
-                <!-- Right: Control Panel -->
-                <div class="control-panel">
-                    <div class="panel-title">
-                        🔬 Microbiome Erosion Simulator
-                    </div>
-
-                    <div class="slider-group">
-                        <div class="slider-header">
-                            <div class="slider-label" data-icon="🔐">
-                                The Glue (Akkermansia)
-                            </div>
-                            <div class="slider-value" id="val-akk">12%</div>
-                        </div>
-                        <input type="range" class="custom-slider" id="slider-akk" 
-                               min="1" max="25" value="12" oninput="handleSlider()">
-                        <div class="ref-range">Critical: Must stay > 6% (Your security gate)</div>
-                        
-                        <div style="margin-top: 12px; padding: 12px; background: rgba(245, 158, 11, 0.08); 
-                                    border-left: 3px solid var(--amber); border-radius: 8px; font-size: 11px; 
-                                    line-height: 1.7; color: var(--text-primary);">
-                            <strong style="color: var(--amber);">⚠️ Educational Note:</strong> 
-                            When Akkermansia drops below 6%, the <strong>cascade effect</strong> begins. 
-                            Other protective species (Faecalibacterium, Bacteroides) start declining automatically. 
-                            This models real-world <em>barrier dysfunction</em> — when the gut lining weakens, 
-                            the entire ecosystem collapses. Watch your Guardian Index (Shannon) plummet 
-                            from ~3.5 → ~2.0 within seconds. This simulates a <strong>multi-month deterioration 
-                            compressed into real-time</strong>. Color coding: 🟢 Green (H' ≥ 3.2 protective), 
-                            🟡 Amber (H' 2.2-3.2 eroding), 🔴 Red (H' < 2.2 collapsed).
-                        </div>
-                    </div>
-
-                    <div class="slider-group">
-                        <div class="slider-header">
-                            <div class="slider-label" data-icon="💚">
-                                The Healer (Faecalibacterium)
-                            </div>
-                            <div class="slider-value" id="val-fae">12%</div>
-                        </div>
-                        <input type="range" class="custom-slider" id="slider-fae" 
-                               min="1" max="25" value="12" oninput="calcShannon()">
-                        <div class="ref-range">Role: Makes butyrate — your gut's repair molecule</div>
-                    </div>
-
-                    <div class="slider-group">
-                        <div class="slider-header">
-                            <div class="slider-label" data-icon="🔥">
-                                The Burner (Bacteroides)
-                            </div>
-                            <div class="slider-value" id="val-bac">30%</div>
-                        </div>
-                        <input type="range" class="custom-slider" id="slider-bac" 
-                               min="10" max="50" value="30" oninput="calcShannon()">
-                        <div class="ref-range">Role: Breaks down fats & complex sugars for energy</div>
-                    </div>
-
-                    <div id="alert-box" class="erosion-alert" style="display:none;">
-                        <span class="alert-icon">🚨</span>
-                        <div class="alert-text">
-                            SECURITY BREACH DETECTED
-                        </div>
-                        <div style="margin-top: 10px; font-size: 13px; font-weight: 600;">
-                            Akkermansia below 6% → Automatic cascade failure active
-                        </div>
-                        <span class="arabic-text" style="margin-top: 10px;">
-                            اختراق أمني: انهيار تلقائي نشط
-                        </span>
-                    </div>
-
-                    <button class="btn-mega" onclick="nextPhase(2)">
-                        <span>🔄 Enter Handshake Mixer → مزج المصافحة</span>
-                    </button>
-                </div>
-            </div>
-        </section>
-
-        <!-- PHASE 2: MIXER -->
-        <section class="stage" id="phase-2">
-            <div class="mixer-title">
-                <h2>⚗️ The Clinical Handshake</h2>
-                <div class="mixer-subtitle">بروتوكول المصافحة بين المحافظ والدم</div>
-            </div>
-
-            <div class="mixer-layout">
-                <!-- Left: Blood Markers -->
-                <div class="mixer-column">
-                    <div class="panel-title">🩸 Your Blood Numbers</div>
-                    
-                    <div class="biomarker-input">
-                        <div>
-                            <div class="biomarker-label" data-icon="💉">Fasting Insulin</div>
-                            <div class="ref-range">Normal: 2-25 μIU/mL</div>
-                        </div>
-                        <input type="number" id="input-insulin" value="4.2" step="0.1" oninput="mixHandshake()">
-                    </div>
-
-                    <div class="biomarker-input">
-                        <div>
-                            <div class="biomarker-label" data-icon="🔥">CRP (Inflammation)</div>
-                            <div class="ref-range">Good: < 1.0 mg/L</div>
-                        </div>
-                        <input type="number" id="input-crp" value="0.4" step="0.1" oninput="mixHandshake()">
-                    </div>
-
-                    <div class="biomarker-input">
-                        <div>
-                            <div class="biomarker-label" data-icon="🍬">Blood Sugar</div>
-                            <div class="ref-range">Normal: 70-99 mg/dL</div>
-                        </div>
-                        <input type="number" id="input-glucose" value="88" oninput="mixHandshake()">
-                    </div>
-
-                    <div class="biomarker-input">
-                        <div>
-                            <div class="biomarker-label" data-icon="🧈">Triglycerides</div>
-                            <div class="ref-range">Good: < 150 mg/dL</div>
-                        </div>
-                        <input type="number" id="input-trig" value="110" oninput="mixHandshake()">
-                    </div>
-
-                    <div class="info-card" style="border-left-color: var(--cyan); margin-top: 30px;">
-                        <span class="card-icon">💡</span>
-                        <div class="card-title">Try This</div>
-                        Set insulin to <strong>15</strong> (high) while keeping Shannon at 3.82 (good). 
-                        You'll see <strong>"Exhaustion"</strong> — your gut is working overtime to save you.
-                    </div>
-                </div>
-
-                <!-- Center: Mixing -->
-                <div class="mixer-center">
-                    <div style="font-size: 13px; font-weight: 900; color: var(--text-muted); 
-                                text-transform: uppercase; letter-spacing: 2px;">
-                        Guardian Power
-                    </div>
-                    <div style="font-family: 'JetBrains Mono'; font-size: 32px; 
-                                font-weight: 900; color: var(--purple); margin: 10px 0;">
-                        <span id="mixer-shannon">3.82</span>
-                    </div>
-
-                    <div class="mixing-orb">
-                        <div class="mixing-symbol">⊗</div>
-                    </div>
-
-                    <div class="tension-value" id="tension-display">1.0x</div>
-                    <div class="tension-label">⚡ HANDSHAKE TENSION</div>
-
-                    <div class="formula-display">
-                        T = [Insulin × (CRP + 0.6) + TG/100 + Glc/100] / H'
-                    </div>
-                </div>
-
-                <!-- Right: Verdict -->
-                <div class="mixer-column">
-                    <div class="panel-title">🎯 Status Report</div>
-                    
-                    <div class="status-badge" id="verdict-badge" 
-                         style="background: var(--emerald); color: #000;">
-                        SOVEREIGN
-                    </div>
-
-                    <div class="info-card" id="verdict-card" style="border-left-color: var(--emerald);">
-                        <div class="card-title" id="verdict-title">✓ Perfect Sovereignty</div>
-                        <p id="verdict-desc" style="margin-top: 10px; font-size: 13px;">
-                            Your Guardian and blood markers are in perfect sync. 
-                            No metabolic stress detected. System is sustainable.
-                        </p>
-                        <span class="arabic-text" id="verdict-arabic">
-                            تناغم مثالي بين المحافظ ومؤشرات الدم. نظام مستدام.
-                        </span>
-                    </div>
-
-                    <div class="info-card" style="border-left-color: var(--rose); margin-top: 20px;">
-                        <span class="card-icon">⚠️</span>
-                        <div class="card-title">The Double Hit Danger</div>
-                        <strong>Scenario 1:</strong> Bad gut + bad blood = Everyone knows you're sick<br>
-                        <strong>Scenario 2:</strong> Good gut + bad blood = Your gut is exhausted compensating<br>
-                        <strong>Scenario 3:</strong> Bad gut + "normal" blood = <span style="color: var(--rose); font-weight: 900;">
-                            SILENT KILLER ☠️
-                        </span>
-                        <br><br>
-                        Doctors miss #3 because they only check blood. We catch it.
-                        <span class="arabic-text">
-                            الأمعاء السيئة + تحاليل "طبيعية" = القاتل الصامت الذي يتجاهله الأطباء
-                        </span>
-                    </div>
-                </div>
-            </div>
-
-            <button class="btn-mega" onclick="nextPhase(3)" style="margin-top: 50px;">
-                <span>📈 View Your 20-Year Trajectory → رؤية المستقبل</span>
-            </button>
-        </section>
-
-        <!-- PHASE 3: INTERACTIVE GRAPH -->
-        <section class="stage" id="phase-3">
-            <div class="graph-container">
-                <div class="graph-header">
-                    <div class="graph-title">
-                        <h2>📊 Your 20-Year Biological Debt</h2>
-                        <div class="graph-subtitle">التنبؤ الحسابي لمدة عشرين عاماً</div>
-                    </div>
-                    <div class="status-badge" id="graph-zone-badge" 
-                         style="background: var(--emerald); color: #000;">
-                        🛡️ SOVEREIGN ZONE
-                    </div>
-                </div>
-
-                <svg class="svg-graph" id="trajectory-svg" viewBox="0 0 900 500">
-                    <!-- Grid Lines -->
-                    <defs>
-                        <pattern id="grid" width="50" height="50" patternUnits="userSpaceOnUse">
-                            <path d="M 50 0 L 0 0 0 50" fill="none" stroke="rgba(255,255,255,0.03)" stroke-width="1"/>
-                        </pattern>
-                    </defs>
-                    <rect width="900" height="500" fill="url(#grid)" />
-
-                    <!-- Baseline -->
-                    <line x1="0" y1="450" x2="900" y2="450" stroke="rgba(255,255,255,0.1)" 
-                          stroke-width="2" stroke-dasharray="10,5"></line>
-                    
-                    <!-- Trajectory Curve -->
-                    <path id="trajectory-path" fill="none" stroke="rgba(255,255,255,0.08)" 
-                          stroke-width="10" d="M 0 450 Q 225 450, 450 250 T 900 50" opacity="0.6"></path>
-                    
-                    <!-- Your Position -->
-                    <circle id="your-dot" class="marker-dot" cx="150" cy="420" r="20" 
-                            fill="currentColor" stroke="rgba(0,0,0,0.4)" stroke-width="4"
-                            style="color: var(--emerald);"></circle>
-                    
-                    <!-- Label -->
-                    <text id="dot-label" x="180" y="410" 
-                          style="fill:#fff; font-size:22px; font-weight:900; font-family:'JetBrains Mono';">
-                        YOU: 1.0x
-                    </text>
-
-                    <!-- Zone Backgrounds -->
-                    <rect x="0" y="0" width="300" height="500" fill="rgba(16, 185, 129, 0.08)" rx="20"></rect>
-                    <text x="100" y="485" style="fill:var(--emerald); font-size:13px; font-weight:900;">
-                        ✓ SOVEREIGN
-                    </text>
-
-                    <rect x="300" y="0" width="300" height="500" fill="rgba(245, 158, 11, 0.08)" rx="20"></rect>
-                    <text x="410" y="485" style="fill:var(--amber); font-size:13px; font-weight:900;">
-                        ⚠️ DRIFT
-                    </text>
-
-                    <rect x="600" y="0" width="300" height="500" fill="rgba(239, 68, 68, 0.08)" rx="20"></rect>
-                    <text x="720" y="485" style="fill:var(--rose); font-size:13px; font-weight:900;">
-                        ☠️ FAILURE
-                    </text>
-
-                    <!-- Axis Labels -->
-                    <text x="10" y="30" style="fill:var(--text-muted); font-size:12px; font-weight:800;">
-                        High Risk
-                    </text>
-                    <text x="10" y="490" style="fill:var(--text-muted); font-size:12px; font-weight:800;">
-                        Low Risk
-                    </text>
-                    <text x="850" y="490" style="fill:var(--text-muted); font-size:12px; font-weight:800;">
-                        20 Years →
-                    </text>
-                </svg>
-
-                <div class="zone-grid">
-                    <div class="zone-card" style="border-color: var(--emerald);">
-                        <span class="zone-icon" style="color: var(--emerald);">🛡️</span>
-                        <div class="zone-title" style="color: var(--emerald);">Sovereign Zone</div>
-                        <div class="zone-desc">
-                            <strong>T < 2.0</strong><br>
-                            Your body's math is working <em>for you</em>, not against you. 
-                            Minimal computational load. Sustainable for decades. 
-                            The preventative window is wide open.
-                        </div>
-                    </div>
-
-                    <div class="zone-card" style="border-color: var(--amber);">
-                        <span class="zone-icon" style="color: var(--amber);">⚠️</span>
-                        <div class="zone-title" style="color: var(--amber);">Metabolic Drift</div>
-                        <div class="zone-desc">
-                            <strong>T: 2.0-4.0</strong><br>
-                            Your Guardian is losing its grip on the metabolic gates. 
-                            Vascular damage starting. Intervention window narrowing fast. 
-                            This is the "pre-disease" zone doctors miss.
-                        </div>
-                    </div>
-
-                    <div class="zone-card" style="border-color: var(--rose);">
-                        <span class="zone-icon" style="color: var(--rose);">☠️</span>
-                        <div class="zone-title" style="color: var(--rose);">Failure Zone</div>
-                        <div class="zone-desc">
-                            <strong>T > 4.0</strong><br>
-                            Structural tissue damage is <em>active</em>. 
-                            Nerve endings dying from oxygen starvation. 
-                            High necrotic risk. Emergency intervention required now.
-                        </div>
-                    </div>
-                </div>
-
-                <div class="info-card" style="border-left-color: var(--purple); margin-top: 40px;">
-                    <span class="card-icon">🧠</span>
-                    <div class="card-title">What This Graph Actually Means</div>
-                    Your dot's position = the <strong>computational burden</strong> your microbiome carries 
-                    to keep you metabolically stable.<br><br>
-                    
-                    <strong>Think of it like this:</strong><br>
-                    • <strong>Left side (Sovereign):</strong> Your body is on cruise control, using 20% CPU<br>
-                    • <strong>Middle (Drift):</strong> Your body is at 80% CPU, starting to lag<br>
-                    • <strong>Right side (Failure):</strong> Your body crashed — the blue screen of death
-                    
-                    <span class="arabic-text" style="margin-top: 15px;">
-                        موقع النقطة = الحمل الحسابي الذي تحمله أمعائك للحفاظ على الاستقرار الأيضي.
-                        اليسار = مستدام. الوسط = متدهور. اليمين = منهار.
-                    </span>
-                </div>
-            </div>
-
-            <button class="btn-mega" onclick="nextPhase(4)" style="margin-top: 50px;">
-                <span>⚠️ Deep Dive: Gangrene Risk Analysis → التحليل العميق</span>
-            </button>
-        </section>
-
-        <!-- PHASE 4: GANGRENE DEEP DIVE -->
-        <section class="stage" id="phase-4">
-            <div class="gangrene-report">
-                <div class="report-grid">
-                    <!-- Left: Risk Score -->
-                    <div>
-                        <div class="risk-display">
-                            <div class="risk-icon">⚠️</div>
-                            <div class="risk-score" id="final-risk">18%</div>
-                            <div class="risk-label">20-YEAR GANGRENE PROBABILITY</div>
-                        </div>
-
-                        <div class="metrics-grid">
-                            <div class="metric-box">
-                                <div class="metric-label">🫀 Nerve Oxygen</div>
-                                <div class="metric-value" id="metric-oxygen" style="color: var(--emerald);">
-                                    98%
-                                </div>
-                            </div>
-                            <div class="metric-box">
-                                <div class="metric-label">⚡ Your Tension</div>
-                                <div class="metric-value" id="metric-tension" style="color: var(--blue);">
-                                    1.0x
-                                </div>
-                            </div>
-                            <div class="metric-box">
-                                <div class="metric-label">🛡️ Guardian Power</div>
-                                <div class="metric-value" id="metric-shannon" style="color: var(--purple);">
-                                    3.82
-                                </div>
-                            </div>
-                            <div class="metric-box">
-                                <div class="metric-label">📊 Status</div>
-                                <div class="metric-value" id="metric-status" style="font-size: 20px; color: var(--emerald);">
-                                    SAFE
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="gcc-context">
-                            <div class="gcc-icon">🌍</div>
-                            <div class="gcc-title">🔥 Why GCC is Different</div>
-                            <div class="gcc-desc">
-                                <strong>Ambient heat (45°C+)</strong> + <strong>High date/sugar diet</strong> = 
-                                Accelerated glycation of blood vessels (think of it like caramelizing sugar in a pan).
-                                <br><br>
-                                When your Guardian (Akkermansia) is weak, this process happens <strong>3x faster</strong> 
-                                in GCC populations. Your nerves start dying silently from oxygen starvation.
-                                <br><br>
-                                <em>Source: Middle East Journal of Internal Medicine, 2023</em>
-                            </div>
-                            <span class="arabic-text">
-                                الحرارة + السكريات الزائدة = تسريع تلف الأوعية الدموية 3 أضعاف عند ضعف المحافظ
-                            </span>
-                        </div>
-                    </div>
-
-                    <!-- Right: Mechanism -->
-                    <div class="pathology-section">
-                        <h3>How Gangrene Actually Starts</h3>
-                        <p style="font-size: 14px; line-height: 1.8; color: #475569; margin-bottom: 30px;">
-                            It's not sudden. It's a slow, mathematical process. Here's the <strong>exact mechanism</strong>:
-                        </p>
-
-                        <div class="formula-breakdown">
-                            <div class="formula-title">🧮 The Math Behind Your Risk</div>
-                            
-                            <div class="formula-line">
-                                <span class="formula-var">Step 1:</span> Handshake Tension (T) = 
-                                [<span id="calc-insulin">4.2</span> × (<span id="calc-crp">0.4</span> + 0.6) + 
-                                <span id="calc-trig">110</span>/100 + <span id="calc-glc">88</span>/100] / 
-                                <span id="calc-shannon">3.82</span>
-                            </div>
-                            
-                            <div class="formula-line">
-                                <span class="formula-var">Step 2:</span> T = <span class="formula-result" id="calc-result">1.0x</span>
-                            </div>
-                            
-                            <div class="formula-line">
-                                <span class="formula-var">Step 3:</span> Gangrene Risk = T × 18% = 
-                                <span class="formula-result" id="calc-final-risk">18%</span> over 20 years
-                            </div>
-
-                            <div style="margin-top: 20px; font-size: 12px; color: var(--text-muted); 
-                                        padding: 15px; background: rgba(255,255,255,0.03); border-radius: 10px;">
-                                💡 <strong>What this means:</strong> For every 1.0 increase in Tension, 
-                                your 20-year gangrene risk increases by ~18%. At T=4.0, you're at 72% probability.
-                            </div>
-                        </div>
-
-                        <div class="mechanism-steps">
-                            <div class="step" style="border-left-color: var(--amber);">
-                                <div class="step-number">01</div>
-                                <div class="step-title" style="color: var(--amber);">
-                                    🔥 Chronic Inflammation (High CRP)
-                                </div>
-                                <div class="step-desc">
-                                    Your blood vessels are under constant inflammatory attack. 
-                                    Think of it like acid slowly dissolving the pipes in your house.
-                                </div>
-                            </div>
-
-                            <div class="step" style="border-left-color: var(--rose);">
-                                <div class="step-number">02</div>
-                                <div class="step-title" style="color: var(--rose);">
-                                    🩸 Microvascular Rarefaction
-                                </div>
-                                <div class="step-desc">
-                                    Your smallest blood vessels (capillaries) start disappearing. 
-                                    Fewer vessels = less oxygen delivery to nerve endings in your feet and hands.
-                                </div>
-                            </div>
-
-                            <div class="step" style="border-left-color: var(--purple);">
-                                <div class="step-number">03</div>
-                                <div class="step-title" style="color: var(--purple);">
-                                    💀 Silent Nerve Death (Neuropathy)
-                                </div>
-                                <div class="step-desc">
-                                    Your nerves suffocate slowly. First you lose sensation (numbness). 
-                                    Then comes pain. Then tissue death. This takes <strong>5-15 years</strong> 
-                                    of high Tension — completely silent until it's too late.
-                                </div>
-                            </div>
-
-                            <div class="step" style="border-left-color: #000;">
-                                <div class="step-number">04</div>
-                                <div class="step-title">
-                                    ☠️ Tissue Necrosis (Gangrene)
-                                </div>
-                                <div class="step-desc">
-                                    Dead nerves + poor circulation = tissue death. 
-                                    A small cut that won't heal becomes infected. Infection spreads. 
-                                    Result: <strong>Amputation</strong>. This is the <em>mathematical endpoint</em> 
-                                    of uncontrolled high Tension.
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="evidence-pills">
-                            <div class="evidence-pill">📄 Nature Metabolism 2023</div>
-                            <div class="evidence-pill">📄 Cell Reports Med 2022</div>
-                            <div class="evidence-pill">📄 Lancet Diabetes 2024</div>
-                            <div class="evidence-pill">📄 J. Clin. Invest. 2024</div>
-                            <div class="evidence-pill">📄 MEJIM 2023 (GCC Study)</div>
-                        </div>
-
-                        <div class="info-card" style="border-left-color: var(--cyan); 
-                                                     background: #e0f2fe; margin-top: 30px;">
-                            <span class="card-icon" style="color: var(--cyan);">💊</span>
-                            <div class="card-title" style="color: #0c4a6e;">The Good News</div>
-                            <div style="color: #075985; font-size: 14px; line-height: 1.8;">
-                                This is <strong>100% preventable</strong> if caught early (T < 2.0). 
-                                The interventions are simple:<br><br>
-                                
-                                • <strong>Boost Akkermansia:</strong> Polyphenols (berries, green tea), 
-                                  omega-3s, intermittent fasting<br>
-                                • <strong>Lower inflammation:</strong> Remove processed foods, 
-                                  improve sleep, manage stress<br>
-                                • <strong>Optimize insulin:</strong> Resistance training, 
-                                  reduce refined carbs<br><br>
-                                
-                                The window is open. The math can be reversed. But you have to act <em>before</em> 
-                                your labs look bad.
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Footer -->
-        <footer style="padding: 30px; text-align: center; opacity: 0.7; 
-                       font-size: 11px; font-family: 'JetBrains Mono'; 
-                       letter-spacing: 1px; margin-top: 50px;">
-            🛡️ AL-MOHAFIZ | BURAK CORE SYSTEM | REGION: GCC<br>
-            <span style="color: var(--amber); font-weight: 700; margin-top: 8px; display: inline-block;">
-                Developed by Waseem Ahanger
-            </span>
-        </footer>
-        
-        <!-- Computing Overlay -->
-        <div id="compute-overlay" style="
-            position: fixed; inset: 0; z-index: 9999;
-            background: rgba(5, 7, 10, 0.98);
-            backdrop-filter: blur(20px);
-            display: none; align-items: center; justify-content: center;
-            flex-direction: column; gap: 30px;">
-            
-            <div style="text-align: center;">
-                <!-- Spinning Engine Icon -->
-                <div style="width: 120px; height: 120px; margin: 0 auto 30px;
-                            background: linear-gradient(135deg, var(--emerald), var(--cyan));
-                            border-radius: 30px; display: flex; align-items: center; justify-content: center;
-                            font-size: 60px; animation: spin 2s linear infinite;
-                            box-shadow: 0 20px 60px rgba(16, 185, 129, 0.4);">
-                    ⚙️
-                </div>
-                
-                <!-- Computing Text -->
-                <div style="font-size: 28px; font-weight: 900; color: var(--emerald);
-                            margin-bottom: 15px; letter-spacing: 2px; text-transform: uppercase;">
-                    MATH ENGINE COMPUTING
-                </div>
-                
-                <!-- Computation Steps -->
-                <div id="compute-steps-display" style="
-                    font-family: 'JetBrains Mono'; font-size: 14px; color: var(--cyan);
-                    text-align: left; background: rgba(0,0,0,0.4); padding: 25px 35px;
-                    border-radius: 20px; border: 1px solid var(--border);
-                    min-width: 500px; max-width: 600px;">
-                    <div class="compute-line" style="margin: 8px 0; opacity: 0;">
-                        ✓ Reading microbiome data...
-                    </div>
-                    <div class="compute-line" style="margin: 8px 0; opacity: 0;">
-                        ✓ Calculating Shannon Entropy...
-                    </div>
-                    <div class="compute-line" style="margin: 8px 0; opacity: 0;">
-                        ✓ Processing biomarkers...
-                    </div>
-                    <div class="compute-line" style="margin: 8px 0; opacity: 0;">
-                        ✓ Computing tension coefficient...
-                    </div>
-                    <div class="compute-line" style="margin: 8px 0; opacity: 0;">
-                        ✓ Analyzing trajectory...
-                    </div>
-                    <div class="compute-line" style="margin: 8px 0; opacity: 0;">
-                        ✓ Generating predictions...
-                    </div>
-                </div>
-                
-                <!-- Progress Bar -->
-                <div style="width: 500px; height: 6px; background: rgba(255,255,255,0.1);
-                            border-radius: 10px; overflow: hidden; margin-top: 30px;">
-                    <div id="compute-progress" style="
-                        height: 100%; width: 0%; 
-                        background: linear-gradient(90deg, var(--emerald), var(--cyan));
-                        transition: width 0.3s ease;
-                        box-shadow: 0 0 20px var(--emerald);"></div>
-                </div>
-                
-                <!-- Status Text -->
-                <div id="compute-status" style="
-                    margin-top: 20px; font-size: 13px; color: var(--text-muted);
-                    font-family: 'JetBrains Mono';">
-                    Initializing...
-                </div>
-            </div>
-        </div>
+<div class="bg-effects"><div class="bg-orb o1"></div><div class="bg-orb o2"></div></div>
+<nav class="top-nav">
+  <div class="top-inner">
+    <div class="brand"><div class="brand-icon">🌙</div><div><h1>Ramadan Co-Pilot</h1><span>BURAK Engine v2.0 PRO</span></div></div>
+    <div class="top-stats">
+      <div class="top-stat"><div class="top-stat-val pos" id="statGap">+580</div><div class="top-stat-lbl">Daily Gap</div></div>
+      <div class="top-stat"><div class="top-stat-val pos" id="statFat">-2.3kg</div><div class="top-stat-lbl">30-Day</div></div>
+      <div class="top-stat"><div class="top-stat-val pos" id="statLiver">-22%</div><div class="top-stat-lbl">Liver</div></div>
     </div>
-
-    <script>
-        // State
-        let shannon = 3.82;
-        let tension = 1.0;
-        let currentPhase = 1;
-        let erosionTimer = null;
-
-        // Phase Navigation
-        function nextPhase(p) {
-            showComputeOverlay(p, () => {
-                currentPhase = p;
-                updatePhaseUI(p);
-            });
-        }
-
-        function jumpPhase(p) {
-            if (p <= currentPhase || p === 1) {
-                showComputeOverlay(p, () => {
-                    currentPhase = p;
-                    updatePhaseUI(p);
-                });
-            }
-        }
-        
-        // Show computing overlay with animation
-        function showComputeOverlay(phase, callback) {
-            const overlay = document.getElementById('compute-overlay');
-            const progress = document.getElementById('compute-progress');
-            const status = document.getElementById('compute-status');
-            const lines = document.querySelectorAll('.compute-line');
-            
-            // Show overlay
-            overlay.style.display = 'flex';
-            
-            // Reset
-            progress.style.width = '0%';
-            lines.forEach(line => line.style.opacity = '0');
-            
-            // Phase-specific computations
-            const computations = {
-                1: [
-                    'Reading microbiome composition...',
-                    'Calculating Shannon Entropy...',
-                    'Evaluating diversity index...',
-                    'Assessing barrier integrity...'
-                ],
-                2: [
-                    'Loading biomarker data...',
-                    'Processing insulin resistance...',
-                    'Calculating inflammation markers...',
-                    'Computing handshake tension...',
-                    'Analyzing metabolic burden...'
-                ],
-                3: [
-                    'Plotting trajectory curve...',
-                    'Calculating 20-year projection...',
-                    'Mapping risk zones...',
-                    'Positioning current state...',
-                    'Rendering graph visualization...'
-                ],
-                4: [
-                    'Running comprehensive analysis...',
-                    'Computing gangrene probability...',
-                    'Calculating tissue oxygenation...',
-                    'Modeling pathway mechanisms...',
-                    'Generating risk assessment...',
-                    'Preparing clinical report...'
-                ]
-            };
-            
-            const steps = computations[phase] || computations[1];
-            const totalTime = 2000; // 2 seconds total
-            const stepTime = totalTime / steps.length;
-            
-            // Animate computation steps
-            steps.forEach((step, index) => {
-                setTimeout(() => {
-                    if (lines[index]) {
-                        lines[index].textContent = '✓ ' + step;
-                        lines[index].style.opacity = '1';
-                        lines[index].style.transition = 'opacity 0.3s ease';
-                    }
-                    
-                    // Update progress
-                    const progressPercent = ((index + 1) / steps.length) * 100;
-                    progress.style.width = progressPercent + '%';
-                    
-                    // Update status
-                    if (index === steps.length - 1) {
-                        status.textContent = 'Complete!';
-                    } else {
-                        status.textContent = `Processing... ${Math.round(progressPercent)}%`;
-                    }
-                }, stepTime * index);
-            });
-            
-            // Complete and hide
-            setTimeout(() => {
-                overlay.style.opacity = '0';
-                overlay.style.transition = 'opacity 0.3s';
-                setTimeout(() => {
-                    overlay.style.display = 'none';
-                    overlay.style.opacity = '1';
-                    callback();
-                }, 300);
-            }, totalTime + 200);
-        }
-
-        function updatePhaseUI(p) {
-            // Update stages
-            document.querySelectorAll('.stage').forEach(s => s.classList.remove('active'));
-            document.getElementById(`phase-${p}`).classList.add('active');
-            
-            // Update dots
-            document.querySelectorAll('.nav-dot').forEach((d, i) => {
-                d.classList.toggle('active', i === p - 1);
-            });
-            
-            // Scroll to top
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-            
-            // Execute phase-specific updates
-            if (p === 2) mixHandshake();
-            if (p === 3) updateGraph();
-            if (p === 4) generateReport();
-        }
-
-        // Shannon Calculation
-        function calcShannon() {
-            const akk = parseInt(document.getElementById('slider-akk').value) / 100;
-            const fae = parseInt(document.getElementById('slider-fae').value) / 100;
-            const bac = parseInt(document.getElementById('slider-bac').value) / 100;
-            const other = Math.max(0.01, 1 - (akk + fae + bac));
-            
-            const entropy = -(akk * Math.log(akk) + fae * Math.log(fae) + 
-                             bac * Math.log(bac) + other * Math.log(other));
-            shannon = (entropy * 3.2).toFixed(2);
-            
-            updateShannonUI();
-        }
-
-        function updateShannonUI() {
-            // Update dial
-            document.getElementById('shannon-display').innerText = shannon;
-            document.getElementById('header-shannon').innerText = shannon;
-            document.getElementById('mixer-shannon').innerText = shannon;
-            
-            // Update angle
-            const angle = (parseFloat(shannon) / 5) * 360;
-            document.getElementById('mega-dial').style.setProperty('--angle', `${angle}deg`);
-            
-            // Update color
-            let color = 'var(--emerald)';
-            let status = 'PROTECTIVE';
-            if (shannon < 2.2) { color = 'var(--rose)'; status = 'COLLAPSED'; }
-            else if (shannon < 3.2) { color = 'var(--amber)'; status = 'ERODING'; }
-            
-            
-            document.documentElement.style.setProperty('--ring-color', color);
-            document.getElementById('status-badge').innerText = status;
-            document.getElementById('status-badge').style.background = color;
-            
-            // Update header Shannon color
-            const shannonEl = document.getElementById('header-shannon');
-            if (shannonEl) {
-                shannonEl.style.color = color;
-            } else {
-                console.error('header-shannon element not found!');
-            }
-        }
-
-        // Slider Handler
-        function handleSlider() {
-            const akk = parseInt(document.getElementById('slider-akk').value);
-            const isBreached = akk < 6;
-            
-            // Update value display
-            document.getElementById('val-akk').innerText = akk + '%';
-            
-            // Show/hide alert
-            document.getElementById('alert-box').style.display = isBreached ? 'block' : 'none';
-            
-            // Handle erosion - FASTER for testing
-            if (isBreached && !erosionTimer) {
-                erosionTimer = setInterval(() => {
-                    const currentAkk = parseInt(document.getElementById('slider-akk').value);
-                    if (currentAkk < 6) {
-                        const faeSlider = document.getElementById('slider-fae');
-                        const bacSlider = document.getElementById('slider-bac');
-                        
-                        // Faster erosion: 1.0 instead of 0.2
-                        faeSlider.value = Math.max(1, parseFloat(faeSlider.value) - 1.0);
-                        bacSlider.value = Math.max(10, parseFloat(bacSlider.value) - 1.0);
-                        
-                        document.getElementById('val-fae').innerText = Math.round(faeSlider.value) + '%';
-                        document.getElementById('val-bac').innerText = Math.round(bacSlider.value) + '%';
-                        
-                        calcShannon();
-                    } else {
-                        clearInterval(erosionTimer);
-                        erosionTimer = null;
-                    }
-                }, 100);
-            } else if (!isBreached && erosionTimer) {
-                clearInterval(erosionTimer);
-                erosionTimer = null;
-            }
-            
-            calcShannon();
-        }
-        
-        // TEST FUNCTION - Force Shannon to specific value
-        window.testShannon = function(value) {
-            shannon = value;
-            updateShannonUI();
-        }
-        
-        // TEST FUNCTION - Force Tension to specific value  
-        window.testTension = function(value) {
-            tension = value;
-            const tensionEl = document.getElementById('header-tension');
-            tensionEl.innerText = tension + 'x';
-            document.getElementById('tension-display').innerText = tension + 'x';
-            
-            let tensionColor;
-            if (tension < 2) {
-                tensionColor = 'var(--emerald)';
-            } else if (tension < 4) {
-                tensionColor = 'var(--amber)';
-            } else {
-                tensionColor = 'var(--rose)';
-            }
-            tensionEl.style.color = tensionColor;
-            document.getElementById('tension-display').style.color = tensionColor;
-        }
-
-        // Update other sliders
-        document.getElementById('slider-fae').addEventListener('input', (e) => {
-            document.getElementById('val-fae').innerText = e.target.value + '%';
-            calcShannon();
-        });
-        document.getElementById('slider-bac').addEventListener('input', (e) => {
-            document.getElementById('val-bac').innerText = e.target.value + '%';
-            calcShannon();
-        });
-
-        // Handshake Mixer
-        function mixHandshake() {
-            const ins = parseFloat(document.getElementById('input-insulin').value) || 0;
-            const crp = parseFloat(document.getElementById('input-crp').value) || 0;
-            const trig = parseFloat(document.getElementById('input-trig').value) || 0;
-            const glc = parseFloat(document.getElementById('input-glucose').value) || 0;
-            
-            tension = (((ins * (crp + 0.6)) + (trig / 100) + (glc / 100)) / parseFloat(shannon)).toFixed(2);
-            
-            
-            // Update displays
-            document.getElementById('tension-display').innerText = tension + 'x';
-            const tensionEl = document.getElementById('header-tension');
-            tensionEl.innerText = tension + 'x';
-            
-            // Dynamic tension color based on value
-            let tensionColor;
-            if (tension < 2) {
-                tensionColor = 'var(--emerald)';
-                tensionEl.style.color = tensionColor;
-                document.getElementById('tension-display').style.color = tensionColor;
-            } else if (tension < 4) {
-                tensionColor = 'var(--amber)';
-                tensionEl.style.color = tensionColor;
-                document.getElementById('tension-display').style.color = tensionColor;
-            } else {
-                tensionColor = 'var(--rose)';
-                tensionEl.style.color = tensionColor;
-                document.getElementById('tension-display').style.color = tensionColor;
-            }
-            
-            
-            // Update verdict
-            updateVerdict();
-        }
-
-        function updateVerdict() {
-            const badge = document.getElementById('verdict-badge');
-            const title = document.getElementById('verdict-title');
-            const desc = document.getElementById('verdict-desc');
-            const arabic = document.getElementById('verdict-arabic');
-            const card = document.getElementById('verdict-card');
-            
-            if (tension < 1.8) {
-                badge.style.background = 'var(--emerald)';
-                badge.style.color = '#000';
-                badge.innerText = '✓ SOVEREIGN';
-                title.innerText = '✓ Perfect Sovereignty';
-                desc.innerText = 'Your Guardian and blood markers are in perfect sync. No metabolic stress detected. System is sustainable for decades. Keep doing what you\'re doing.';
-                arabic.innerText = 'تناغم مثالي. نظام مستدام. استمر على نفس النهج.';
-                card.style.borderLeftColor = 'var(--emerald)';
-            } else if (parseFloat(shannon) > 3.2 && tension > 2.5) {
-                badge.style.background = 'var(--amber)';
-                badge.style.color = '#000';
-                badge.innerText = '⚡ EXHAUSTION';
-                title.innerText = '⚡ Metabolic Exhaustion';
-                desc.innerText = 'Your gut diversity is good, but your blood markers are elevated. This means your Guardian is working overtime to compensate for systemic dysfunction. It\'s like running your car engine at 8000 RPM on the highway — it works, but you\'re burning out.';
-                arabic.innerText = 'أمعاء جيدة لكن مؤشرات سيئة. المحافظ يعمل بجهد زائد وسينهار قريباً.';
-                card.style.borderLeftColor = 'var(--amber)';
-            } else if (parseFloat(shannon) < 2.5 && tension < 2.5) {
-                badge.style.background = 'var(--amber)';
-                badge.style.color = '#000';
-                badge.innerText = '🔇 SILENT DRIFT';
-                title.innerText = '🔇 Silent Metabolic Drift';
-                desc.innerText = 'DANGER ZONE: Your blood markers look "okay" but your Guardian is weak. Your body is hiding damage through compensatory mechanisms. This is the silent killer doctors miss — normal labs, collapsing foundation.';
-                arabic.innerText = 'منطقة خطر: المؤشرات تبدو طبيعية لكن المحافظ ضعيف. خطر صامت مخفي.';
-                card.style.borderLeftColor = 'var(--amber)';
-            } else {
-                badge.style.background = 'var(--rose)';
-                badge.style.color = '#fff';
-                badge.innerText = '☠️ CRITICAL';
-                title.innerText = '☠️ Metabolic Insolvency';
-                desc.innerText = 'RED ALERT: Guardian collapse + elevated inflammatory markers. Your body has run out of compensatory mechanisms. System failure is imminent. This is the pathway to diabetic complications, neuropathy, and gangrene. Immediate intervention required.';
-                arabic.innerText = 'إنذار أحمر: انهيار المحافظ مع ارتفاع الالتهاب. فشل نظامي وشيك.';
-                card.style.borderLeftColor = 'var(--rose)';
-            }
-            
-            // Update tension color
-            const tensionEl = document.getElementById('tension-display');
-            if (tension < 2) tensionEl.style.color = 'var(--emerald)';
-            else if (tension < 4) tensionEl.style.color = 'var(--amber)';
-            else tensionEl.style.color = 'var(--rose)';
-        }
-
-        // Graph Update
-        function updateGraph() {
-            const dot = document.getElementById('your-dot');
-            const label = document.getElementById('dot-label');
-            const badge = document.getElementById('graph-zone-badge');
-            
-            // Calculate position
-            const x = Math.min(880, parseFloat(tension) * 150);
-            const y = 450 - (Math.pow(parseFloat(tension), 1.6) * 35);
-            
-            // Update position
-            dot.setAttribute('cx', x);
-            dot.setAttribute('cy', y);
-            label.setAttribute('x', x + 30);
-            label.setAttribute('y', y - 10);
-            label.textContent = `YOU: ${tension}x`;
-            
-            // Update color and zone
-            let color = 'var(--emerald)';
-            let zoneText = '🛡️ SOVEREIGN ZONE';
-            
-            if (tension < 2) {
-                color = 'var(--emerald)';
-                badge.style.background = 'var(--emerald)';
-                badge.style.color = '#000';
-            } else if (tension < 4) {
-                color = 'var(--amber)';
-                zoneText = '⚠️ DRIFT ZONE';
-                badge.style.background = 'var(--amber)';
-                badge.style.color = '#000';
-            } else {
-                color = 'var(--rose)';
-                zoneText = '☠️ FAILURE ZONE';
-                badge.style.background = 'var(--rose)';
-                badge.style.color = '#fff';
-            }
-            
-            badge.innerText = zoneText;
-            dot.style.color = color;
-        }
-
-        // Generate Report
-        function generateReport() {
-            const risk = Math.min(99, parseFloat(tension) * 18).toFixed(0);
-            
-            // Update risk score
-            document.getElementById('final-risk').innerText = risk + '%';
-            
-            // Update metrics
-            const oxygenation = tension > 2 ? Math.max(0, 100 - (risk * 0.65)).toFixed(0) : 100;
-            document.getElementById('metric-oxygen').innerText = oxygenation + '%';
-            document.getElementById('metric-tension').innerText = tension + 'x';
-            document.getElementById('metric-shannon').innerText = shannon;
-            
-            // Update status
-            const statusEl = document.getElementById('metric-status');
-            if (tension < 2) {
-                statusEl.innerText = 'SAFE';
-                statusEl.style.color = 'var(--emerald)';
-            } else if (tension < 4) {
-                statusEl.innerText = 'AT RISK';
-                statusEl.style.color = 'var(--amber)';
-            } else {
-                statusEl.innerText = 'DANGER';
-                statusEl.style.color = 'var(--rose)';
-            }
-            
-            // Update calculation display
-            document.getElementById('calc-insulin').innerText = document.getElementById('input-insulin').value;
-            document.getElementById('calc-crp').innerText = document.getElementById('input-crp').value;
-            document.getElementById('calc-trig').innerText = document.getElementById('input-trig').value;
-            document.getElementById('calc-glc').innerText = document.getElementById('input-glucose').value;
-            document.getElementById('calc-shannon').innerText = shannon;
-            document.getElementById('calc-result').innerText = tension + 'x';
-            document.getElementById('calc-final-risk').innerText = risk + '%';
-            
-            // Update colors
-            const riskEl = document.getElementById('final-risk');
-            const oxyEl = document.getElementById('metric-oxygen');
-            
-            if (tension < 2) {
-                riskEl.style.color = 'var(--emerald)';
-                oxyEl.style.color = 'var(--emerald)';
-            } else {
-                riskEl.style.color = '#dc2626';
-                oxyEl.style.color = '#dc2626';
-            }
-        }
-
-        // Reset
-        function resetDemo() {
-            if (confirm('Reset all values and start over?')) {
-                
-                // Reset sliders
-                document.getElementById('slider-akk').value = 12;
-                document.getElementById('slider-fae').value = 15;
-                document.getElementById('slider-bac').value = 36;
-                
-                // Reset inputs
-                document.getElementById('input-insulin').value = 4.2;
-                document.getElementById('input-crp').value = 0.4;
-                document.getElementById('input-glucose').value = 88;
-                document.getElementById('input-trig').value = 110;
-                
-                // Reset displays
-                document.getElementById('val-akk').innerText = '12%';
-                document.getElementById('val-fae').innerText = '15%';
-                document.getElementById('val-bac').innerText = '36%';
-                
-                // Recalculate
-                calcShannon();
-                mixHandshake();
-                
-                // Return to phase 1
-                nextPhase(1);
-                
-                // Success message
-                setTimeout(() => {
-                    alert('✓ Reset complete! Shannon: ' + shannon + ', Tension: ' + tension + 'x');
-                }, 500);
-            } else {
-            }
-        }
-
-        // Initialize
-        window.onload = () => {
-            // Set initial badge colors
-            document.getElementById('header-shannon').style.color = 'var(--emerald)';
-            document.getElementById('header-tension').style.color = 'var(--emerald)';
-            
-            calcShannon();
-            mixHandshake();
-            
-            // Add keyboard shortcuts
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'ArrowRight' && currentPhase < 4) nextPhase(currentPhase + 1);
-                if (e.key === 'ArrowLeft' && currentPhase > 1) nextPhase(currentPhase - 1);
-            });
-        };
-    </script>
+    <div class="mode-ind deficit" id="modeInd"><div class="dot"></div><span>Fat Burning</span></div>
+  </div>
+</nav>
+<main class="main">
+  <aside class="panel">
+    <section class="section">
+      <div class="sec-head"><div class="sec-icon">📊</div><div class="sec-title">Body Profile</div></div>
+      <div class="input-row">
+        <div class="input-card"><input type="number" id="inWeight" value="85" onchange="recalc()"><label>Weight (kg)</label></div>
+        <div class="input-card"><input type="number" id="inHeight" value="175" onchange="recalc()"><label>Height (cm)</label></div>
+      </div>
+      <div class="input-row">
+        <div class="input-card"><input type="number" id="inAge" value="38" onchange="recalc()"><label>Age</label></div>
+        <div class="input-card"><input type="number" id="inWaist" value="95" onchange="recalc()"><label>Waist (cm)</label></div>
+      </div>
+    </section>
+    <section class="section">
+      <div class="sec-head"><div class="sec-icon">🍽️</div><div class="sec-title">Daily Intake</div><div class="sec-badge">500-6000</div></div>
+      <div class="slider-card">
+        <div class="slider-head">
+          <div class="slider-info"><div class="lbl">Suhoor + Iftar</div><div class="sub">Total daily calories</div></div>
+          <div class="slider-val cal" id="calVal">1800<span class="unit">kcal</span></div>
+        </div>
+        <div class="slider-track"><div class="slider-fill cal" id="calFill" style="width:24%"></div></div>
+        <input type="range" id="calSlider" min="500" max="6000" value="1800" step="50" oninput="updateCal()">
+        <div class="slider-marks"><span>500</span><span>2000</span><span>3500</span><span>5000</span><span>6000</span></div>
+      </div>
+    </section>
+    <section class="section">
+      <div class="sec-head"><div class="sec-icon">⏰</div><div class="sec-title">Fasting Window</div></div>
+      <div class="slider-card">
+        <div class="slider-head">
+          <div class="slider-info"><div class="lbl">Hours Fasting</div><div class="sub">Dawn to sunset + night</div></div>
+          <div class="slider-val fast" id="fastVal">14<span class="unit">hrs</span></div>
+        </div>
+        <div class="slider-track"><div class="slider-fill fast" id="fastFill" style="width:43%"></div></div>
+        <input type="range" id="fastSlider" min="8" max="22" value="14" oninput="updateFast()">
+        <div class="slider-marks"><span>8h</span><span>12h</span><span>16h</span><span>20h</span><span>22h</span></div>
+      </div>
+    </section>
+    <section class="section">
+      <div class="sec-head"><div class="sec-icon">🏃</div><div class="sec-title">Activity Level</div></div>
+      <div class="act-grid">
+        <div class="act-btn" data-m="1.2" onclick="setAct(this)"><div class="ico">🧘</div><div class="name">Sedentary</div><div class="mult">×1.2</div></div>
+        <div class="act-btn active" data-m="1.4" onclick="setAct(this)"><div class="ico">🚶</div><div class="name">Light</div><div class="mult">×1.4</div></div>
+        <div class="act-btn" data-m="1.55" onclick="setAct(this)"><div class="ico">🏃</div><div class="name">Moderate</div><div class="mult">×1.55</div></div>
+        <div class="act-btn" data-m="1.725" onclick="setAct(this)"><div class="ico">💪</div><div class="name">Active</div><div class="mult">×1.725</div></div>
+        <div class="act-btn" data-m="1.9" onclick="setAct(this)"><div class="ico">🏋️</div><div class="name">V.Active</div><div class="mult">×1.9</div></div>
+        <div class="act-btn" data-m="2.2" onclick="setAct(this)"><div class="ico">⚡</div><div class="name">Athlete</div><div class="mult">×2.2</div></div>
+      </div>
+      <div class="flags">
+        <div class="flag" id="flagDiab" onclick="toggleFlag('diab')"><div class="ico">💉</div><div class="txt">Diabetic</div></div>
+        <div class="flag" id="flagPcos" onclick="toggleFlag('pcos')"><div class="ico">♀️</div><div class="txt">PCOS</div></div>
+        <div class="flag" id="flagNafld" onclick="toggleFlag('nafld')"><div class="ico">🫁</div><div class="txt">Fatty Liver</div></div>
+      </div>
+    </section>
+    <div class="summary deficit" id="summaryBox">
+      <div class="sum-eq">
+        <div class="sum-term"><div class="val burn" id="sumBurn">2380</div><div class="lbl">TDEE</div></div>
+        <div class="sum-op">−</div>
+        <div class="sum-term"><div class="val eat" id="sumEat">1800</div><div class="lbl">Intake</div></div>
+        <div class="sum-op">=</div>
+        <div class="sum-term"><div class="val gap" id="sumGap">+580</div><div class="lbl">Gap</div></div>
+      </div>
+      <div class="sum-msg good" id="sumMsg">✓ Deficit: Burning ~580 kcal/day from body fat</div>
+    </div>
+    <button class="calc-btn" onclick="runEngine()">🧮 Calculate 30-Day Projection</button>
+  </aside>
+  <section class="dash">
+    <div class="welcome" id="welcome">
+      <div class="welcome-icon">🧬</div>
+      <h2>Precision Biomarker Engine</h2>
+      <p>Configure your profile and click Calculate for a 30-day metabolic projection with deep biomarker analysis.</p>
+      <div class="welcome-grid">
+        <div class="welcome-feat"><div class="ico">⛓️</div><div class="title">10-Step Cascade</div><div class="desc">Interconnected calculations</div></div>
+        <div class="welcome-feat"><div class="ico">🧪</div><div class="title">Biomarker Dives</div><div class="desc">Insulin, liver, gut, inflammation</div></div>
+        <div class="welcome-feat"><div class="ico">🛡️</div><div class="title">Disease Tracking</div><div class="desc">T2D, heart, liver risks</div></div>
+        <div class="welcome-feat"><div class="ico">📋</div><div class="title">Wellness Reports</div><div class="desc">Clinic-ready output</div></div>
+      </div>
+    </div>
+    <div id="results"></div>
+  </section>
+</main>
+<div class="loading-bg" id="loadingBg"><div class="spinner"></div><div class="loading-text">Running BURAK Engine v2.0</div><div class="loading-step" id="loadingStep">Calculating BMR...</div></div>
+<div class="modal-bg" id="modalBg" onclick="closeModal(event)"><div class="modal" id="modal"><div class="modal-close" onclick="closeModal()">&times;</div><div id="modalContent"></div></div></div>
+<script>
+const $=id=>document.getElementById(id);
+const S={cal:1800,fast:14,actM:1.4,flags:{diab:false,pcos:false,nafld:false}};
+let E=null;
+const F={
+  bmr:()=>{const w=+$('inWeight').value||85,h=+$('inHeight').value||175,a=+$('inAge').value||38;return Math.round(10*w+6.25*h-5*a+5);},
+  tdee:()=>Math.round(F.bmr()*S.actM),
+  bf:()=>{const wa=+$('inWaist').value||95,h=+$('inHeight').value||175;return Math.round(Math.max(8,Math.min(45,(wa/h)*100-18))*10)/10;},
+  visc:()=>{const wa=+$('inWaist').value||95,h=+$('inHeight').value||175;return Math.round(Math.max(5,Math.min(25,(wa/h)*30-5))*10)/10;}
+};
+function runCascade(inp){
+  const days=[];
+  let st={wt:inp.wt,liver:S.flags.nafld?28:18,visc:inp.visc,gut:0.65,inf:8,insSens:S.flags.diab?0.45:(S.flags.pcos?0.55:0.8)};
+  for(let d=1;d<=30;d++){
+    const c={};
+    const gap=inp.tdee-inp.cal,isDef=gap>0;
+    c.s1={name:"Energy Balance",icon:"⚡",val:gap,unit:"kcal",good:isDef,formula:"TDEE("+inp.tdee+") - Intake("+inp.cal+") = "+gap,explain:isDef?"Body needs "+gap+" kcal more than consumed. Energy from stored fat.":"Surplus of "+Math.abs(gap)+" kcal being stored as fat."};
+    const baseIns=S.flags.diab?22:(S.flags.pcos?15:10);
+    const fastDrop=Math.min(0.45,(inp.fast/24)*0.45);
+    const defDrop=isDef?Math.min(0.25,gap/2000):0;
+    const surRise=!isDef?Math.min(0.35,Math.abs(gap)/1500):0;
+    const insMult=1-fastDrop-defDrop+surRise;
+    const curIns=baseIns*insMult;
+    const insChg=((curIns-baseIns)/baseIns)*100;
+    if(isDef)st.insSens=Math.min(0.95,st.insSens+0.012);else st.insSens=Math.max(0.3,st.insSens-0.008);
+    c.s2={name:"Insulin Level",icon:"💉",val:insChg,unit:"%",good:insChg<0,raw:{base:baseIns,cur:curIns,sens:st.insSens},formula:"I = "+baseIns+" × (1 - "+fastDrop.toFixed(2)+" - "+defDrop.toFixed(2)+" + "+surRise.toFixed(2)+") = "+curIns.toFixed(1),explain:insChg<0?"Insulin ↓"+Math.abs(Math.round(insChg))+"%. Fat cells releasing energy.":"Insulin ↑"+Math.round(insChg)+"%. Fat cells in storage mode."};
+    const insNorm=curIns/25,fastF=Math.min(1,inp.fast/18),defF=isDef?Math.min(1,gap/1000):0;
+    let fbr=(1-insNorm)*fastF*(0.25+defF*0.75);fbr=Math.max(0.1,Math.min(0.92,fbr));
+    const fbPct=Math.round(fbr*100);
+    c.s3={name:"Fuel Selection",icon:"🔥",val:fbPct,unit:"% fat",good:fbPct>50,raw:{ratio:fbr},formula:"FSR = (1-"+insNorm.toFixed(2)+") × "+fastF.toFixed(2)+" × (0.25+"+defF.toFixed(2)+"×0.75) = "+fbPct+"%",explain:fbPct>50?"Burning "+fbPct+"% fat, "+(100-fbPct)+"% glucose.":"Burning "+(100-fbPct)+"% glucose, only "+fbPct+"% fat."};
+    let liverChg;
+    if(isDef)liverChg=-fbr*(gap/7700)*3.5;else liverChg=insNorm*(Math.abs(gap)/7700)*2.5;
+    st.liver=Math.max(3,Math.min(45,st.liver+liverChg));
+    const cumLiver=((st.liver-(S.flags.nafld?28:18))/(S.flags.nafld?28:18))*100;
+    c.s4={name:"Liver Fat",icon:"🫁",val:cumLiver,unit:"%",good:cumLiver<0,raw:{cur:st.liver},formula:isDef?"ΔL = -"+fbr.toFixed(2)+" × ("+gap+"/7700) × 3.5":"ΔL = +"+insNorm.toFixed(2)+" × ("+Math.abs(gap)+"/7700) × 2.5",explain:cumLiver<0?"Liver fat ↓"+Math.abs(Math.round(cumLiver))+"%. Hepatic function improving.":"Liver fat ↑"+Math.round(cumLiver)+"%. Metabolic function impaired."};
+    const liverH=Math.max(0.3,1-(st.liver/50));
+    let keto;if(isDef&&inp.fast>=12)keto=1.8*fbr*(1-insNorm)*liverH;else keto=0.1+(inp.fast>14?0.15:0);
+    keto=Math.max(0.1,Math.min(3,keto));
+    c.s5={name:"Ketones",icon:"🧪",val:keto,unit:"mmol/L",good:keto>0.5,formula:"K = 1.8 × "+fbr.toFixed(2)+" × (1-"+insNorm.toFixed(2)+") × "+liverH.toFixed(2)+" = "+keto.toFixed(2),explain:keto>0.5?"Ketosis at "+keto.toFixed(2)+" mmol/L. Brain using ketones.":"Low ketones "+keto.toFixed(2)+" mmol/L. Brain on glucose."};
+    let mmc;if(inp.fast>=10)mmc=Math.min(1,(inp.fast-6)/10);else mmc=0.25;
+    const mmcPct=Math.round(mmc*100);
+    c.s6={name:"Gut Motility",icon:"🧹",val:mmcPct,unit:"% MMC",good:mmcPct>60,raw:{act:mmc},formula:"MMC = min(1, ("+inp.fast+"-6)/10) = "+mmcPct+"%",explain:mmcPct>60?"MMC "+mmcPct+"% active. Gut cleaning well.":"MMC only "+mmcPct+"%. Cleaning suppressed."};
+    const repR=mmc*0.012,dmgR=(st.inf/20)*0.006;
+    if(isDef&&mmc>0.5)st.gut=Math.min(0.95,st.gut+repR-dmgR);else st.gut=Math.max(0.4,st.gut-dmgR*1.5);
+    const gutChg=((st.gut-0.65)/0.65)*100;
+    c.s7={name:"Gut Barrier",icon:"🧱",val:gutChg,unit:"%",good:gutChg>0,raw:{int:st.gut},formula:"G = 0.65 + "+repR.toFixed(4)+" - "+dmgR.toFixed(4)+" = "+st.gut.toFixed(2),explain:gutChg>0?"Gut barrier ↑"+Math.round(gutChg)+"%. Less permeability.":"Gut barrier ↓"+Math.abs(Math.round(gutChg))+"%. Leaky gut risk."};
+    const lps=(1-st.gut)*100,lpsChg=-gutChg*0.8;
+    c.s8={name:"Endotoxins",icon:"☠️",val:lpsChg,unit:"%",good:lpsChg<0,raw:{lps:lps},formula:"LPS = (1-"+st.gut.toFixed(2)+") × 100 = "+lps.toFixed(1)+"%",explain:lpsChg<0?"LPS leakage ↓"+Math.abs(Math.round(lpsChg))+"%. Less toxins in blood.":"LPS leakage ↑"+Math.round(lpsChg)+"%. Metabolic endotoxemia."};
+    const lpsC=lps*0.06,liverC=st.liver*0.18,viscC=st.visc*0.12;
+    st.inf=lpsC+liverC+viscC;
+    const infChg=((st.inf-8)/8)*100;
+    c.s9={name:"Inflammation",icon:"🔴",val:infChg,unit:"%",good:infChg<0,raw:{tot:st.inf,crp:st.inf/4},formula:"Inf = "+lps.toFixed(1)+"×0.06 + "+st.liver.toFixed(1)+"×0.18 + "+st.visc.toFixed(1)+"×0.12 = "+st.inf.toFixed(1),explain:infChg<0?"Inflammation ↓"+Math.abs(Math.round(infChg))+"%. CRP dropping.":"Inflammation ↑"+Math.round(infChg)+"%. CRP rising."};
+    const diabR=isDef?-Math.round(d*1.1*(S.flags.diab?1.6:1)):Math.round(d*0.8*(S.flags.diab?1.4:1));
+    const heartR=isDef?-Math.round(d*0.85):Math.round(d*0.6);
+    const liverR=isDef?-Math.round(d*1.3*(S.flags.nafld?1.5:1)):Math.round(d*0.9*(S.flags.nafld?1.3:1));
+    const metaR=isDef?-Math.round(d*0.95):Math.round(d*0.7);
+    const overR=(diabR+heartR+liverR+metaR)/4;
+    c.s10={name:"Disease Risk",icon:"🛡️",val:overR,unit:"%",good:overR<0,raw:{diab:diabR,heart:heartR,liver:liverR,meta:metaR},formula:"Risk = f(insulin, liver, inflammation, visceral)",explain:overR<0?"Disease trajectory ↓"+Math.abs(Math.round(overR))+"%. Health improving.":"Disease risk ↑"+Math.round(overR)+"%. Consider reducing intake."};
+    const dailyFat=isDef?gap/7700:-Math.abs(gap)/7700;
+    st.wt-=dailyFat;
+    if(isDef)st.visc=Math.max(4,st.visc-(fbr*gap/7700*0.55));else st.visc=Math.min(35,st.visc+(Math.abs(gap)/7700*0.35));
+    days.push({day:d,c:c,st:JSON.parse(JSON.stringify(st)),isDef:isDef,wtChg:inp.wt-st.wt,fatLoss:dailyFat*d});
+  }
+  return days;
+}
+function runEngine(){
+  $('loadingBg').classList.add('show');
+  const steps=['Calculating BMR...','Computing TDEE...','Modeling insulin...','Running liver metabolism...','Analyzing gut...','Calculating inflammation...','Projecting disease...','Generating report...'];
+  let i=0;const int=setInterval(()=>{if(i<steps.length)$('loadingStep').textContent=steps[i++];},120);
+  setTimeout(()=>{
+    clearInterval(int);
+    const inp={wt:+$('inWeight').value||85,ht:+$('inHeight').value||175,age:+$('inAge').value||38,bf:F.bf(),visc:F.visc(),tdee:F.tdee(),cal:S.cal,fast:S.fast};
+    E={inp:inp,days:runCascade(inp)};
+    $('loadingBg').classList.remove('show');
+    $('welcome').style.display='none';
+    render();
+  },1000);
+}
+function render(){
+  const d30=E.days[29],isDef=d30.isDef;
+  let h='<div class="res-head"><h2 class="res-title">30-Day Projection</h2><div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><div class="day-sel"><label>Day</label><input type="range" id="daySlider" min="1" max="30" value="30" oninput="upDay(this.value)"><div class="day-badge" id="dayBadge">Day 30</div></div></div></div>';
+  h+='<div class="state-card"><div class="state-head">Body State</div><div class="state-grid" id="stateGrid"></div></div>';
+  h+='<div class="cascade-card"><div class="cascade-head"><div class="cascade-title">10-Step Cascade</div><div class="cascade-legend"><span><div class="dot good"></div>Good</span><span><div class="dot bad"></div>Bad</span></div></div><div class="cascade-flow" id="cascadeFlow"></div></div>';
+  h+='<div class="deep-grid" id="deepGrid"></div>';
+  h+='<div class="disease-card"><div class="disease-head">Disease Risk</div><div class="disease-grid" id="diseaseGrid"></div></div>';
+  h+='<div class="story-card"><div class="story-head">🌙 Your Ramadan Journey</div><div class="story-text" id="storyText"></div></div>';
+  h+='<div class="report-card"><div class="report-head"><div class="report-title">📋 Wellness Report</div><div class="report-btns"><button class="report-btn" onclick="window.print()">🖨️ Print</button><button class="report-btn primary">📤 Export</button></div></div><div class="report-summary" id="reportSum"></div><div class="report-recs" id="reportRecs"></div></div>';
+  $('results').innerHTML=h;
+  upDay(30);
+}
+function upDay(n){
+  n=+n;$('dayBadge').textContent='Day '+n;
+  const d=E.days[n-1],c=d.c,st=d.st,isDef=d.isDef;
+  const modeEl=$('modeInd');
+  modeEl.className='mode-ind '+(isDef?'deficit':'surplus');
+  modeEl.innerHTML='<div class="dot"></div><span>'+(isDef?'Fat Burning':'Fat Storage')+'</span>';
+  const stItems=[{ico:'⚖️',lbl:'Weight',val:d.wtChg.toFixed(1),unit:'kg',good:d.wtChg>=0},{ico:'🫁',lbl:'Liver',val:st.liver.toFixed(1),unit:'%',good:st.liver<18},{ico:'🦠',lbl:'Gut',val:Math.round(st.gut*100),unit:'%',good:st.gut>0.65},{ico:'🔥',lbl:'Inflam',val:st.inf.toFixed(1),unit:'',good:st.inf<8},{ico:'💉',lbl:'Ins.Sens',val:Math.round(st.insSens*100),unit:'%',good:st.insSens>0.7}];
+  $('stateGrid').innerHTML=stItems.map(i=>'<div class="state-item"><div class="ico">'+i.ico+'</div><div class="val '+(i.good?'good':'bad')+'">'+i.val+i.unit+'</div><div class="lbl">'+i.lbl+'</div></div>').join('');
+  const steps=['s1','s2','s3','s4','s5','s6','s7','s8','s9','s10'];
+  let cascH='';
+  steps.forEach((sk,i)=>{
+    const s=c[sk];
+    let dv;
+    if(s.unit==='kcal')dv=(s.val>=0?'+':'')+s.val;
+    else if(s.unit==='mmol/L')dv=s.val.toFixed(2);
+    else if(s.unit==='% fat'||s.unit==='% MMC')dv=s.val+'%';
+    else dv=(s.val>=0?'+':'')+Math.round(s.val)+'%';
+    const bw=Math.min(100,Math.abs(s.val)/(s.unit==='kcal'?15:s.unit==='mmol/L'?0.03:1.2));
+    cascH+='<div class="casc-step '+(s.good?'good':'bad')+'" onclick="showModal('+i+','+n+')"><div class="casc-num">'+(i+1)+'</div><div class="casc-info"><div class="casc-name">'+s.icon+' '+s.name+'</div><div class="casc-formula">'+s.formula.substring(0,40)+(s.formula.length>40?'...':'')+'</div></div><div class="casc-bar"><div class="casc-fill '+(s.good?'good':'bad')+'" style="width:'+bw+'%"></div></div><div class="casc-val '+(s.good?'good':'bad')+'">'+dv+'</div></div>';
+    if(i<9)cascH+='<div class="casc-arrow">↓</div>';
+  });
+  $('cascadeFlow').innerHTML=cascH;
+  const deeps=[{key:'insulin',title:'Insulin',sub:'Fat storage control',ico:'💉',val:c.s2.raw.cur.toFixed(1),unit:'μU/mL',good:c.s2.good,metrics:[{l:'Base',v:c.s2.raw.base,g:true},{l:'Change',v:Math.round(c.s2.val)+'%',g:c.s2.good},{l:'Sens',v:Math.round(st.insSens*100)+'%',g:st.insSens>0.7}],insight:c.s2.explain},{key:'liver',title:'Liver Fat',sub:'Hepatic steatosis',ico:'🫁',val:st.liver.toFixed(1),unit:'%',good:st.liver<18,metrics:[{l:'Current',v:st.liver.toFixed(1)+'%',g:st.liver<15},{l:'Change',v:Math.round(c.s4.val)+'%',g:c.s4.good},{l:'Capacity',v:Math.round((1-st.liver/50)*100)+'%',g:st.liver<20}],insight:c.s4.explain},{key:'gut',title:'Gut Health',sub:'Microbiome status',ico:'🦠',val:Math.round(st.gut*100),unit:'%',good:st.gut>0.65,metrics:[{l:'Integrity',v:Math.round(st.gut*100)+'%',g:st.gut>0.7},{l:'MMC',v:c.s6.val+'%',g:c.s6.good},{l:'LPS',v:Math.round(c.s8.raw.lps)+'%',g:c.s8.raw.lps<30}],insight:c.s7.explain},{key:'inflammation',title:'Inflammation',sub:'Systemic markers',ico:'🔥',val:st.inf.toFixed(1),unit:'score',good:st.inf<8,metrics:[{l:'CRP',v:(st.inf/4).toFixed(1)+' mg/L',g:st.inf<8},{l:'Change',v:Math.round(c.s9.val)+'%',g:c.s9.good},{l:'Sources',v:'3 active',g:st.inf<10}],insight:c.s9.explain}];
+  $('deepGrid').innerHTML=deeps.map(dd=>'<div class="deep-card '+dd.key+'"><div class="deep-head"><div class="deep-title"><div class="ico">'+dd.ico+'</div><div><h3>'+dd.title+'</h3><span>'+dd.sub+'</span></div></div><div class="deep-value"><div class="num '+(dd.good?'good':'bad')+'">'+dd.val+'</div><div class="unit">'+dd.unit+'</div></div></div><div class="deep-gauge"><div class="deep-gauge-marker" style="left:'+(dd.good?'25':'70')+'%"></div></div><div class="deep-metrics">'+dd.metrics.map(m=>'<div class="deep-metric"><div class="v '+(m.g?'good':'bad')+'">'+m.v+'</div><div class="l">'+m.l+'</div></div>').join('')+'</div><div class="deep-insight"><div class="deep-insight-title">Status</div><div class="deep-insight-text">'+dd.insight+'</div></div></div>').join('');
+  const diseases=[{ico:'💉',name:'Type 2 Diabetes',val:c.s10.raw.diab},{ico:'❤️',name:'Heart Disease',val:c.s10.raw.heart},{ico:'🫁',name:'Fatty Liver',val:c.s10.raw.liver},{ico:'⚖️',name:'Metabolic Syn.',val:c.s10.raw.meta}];
+  $('diseaseGrid').innerHTML=diseases.map(dis=>'<div class="dis-item '+(dis.val<0?'good':'bad')+'"><div class="ico">'+dis.ico+'</div><div class="name">'+dis.name+'</div><div class="val '+(dis.val<0?'good':'bad')+'">'+(dis.val>=0?'+':'')+dis.val+'%</div><div class="trend '+(dis.val<0?'good':'bad')+'">'+(dis.val<0?'↓ Down':'↑ Up')+'</div></div>').join('');
+  const story=isDef?'After <strong>'+n+' days</strong> in deficit, your body adapted well. Daily gap of <strong class="hl">'+c.s1.val+' kcal</strong> mobilized fat stores. Insulin ↓<strong class="hl">'+Math.abs(Math.round(c.s2.val))+'%</strong>. Burning <strong class="hl">'+c.s3.val+'% fat</strong>. Liver fat at <strong class="hl">'+st.liver.toFixed(1)+'%</strong>. Ketones <strong class="hl">'+c.s5.val.toFixed(2)+' mmol/L</strong>. Gut health <strong class="hl">'+Math.round(st.gut*100)+'%</strong>. Inflammation <strong class="hl">'+st.inf.toFixed(1)+'</strong>. Weight change: <strong class="hl">'+d.wtChg.toFixed(1)+' kg</strong>.':'After <strong>'+n+' days</strong> in surplus, body is storing fat. Surplus of <strong class="warn">'+Math.abs(c.s1.val)+' kcal</strong> converted to fat. Insulin ↑<strong class="warn">'+Math.round(c.s2.val)+'%</strong>. Only burning <strong class="warn">'+c.s3.val+'% fat</strong>. Liver fat <strong class="warn">'+st.liver.toFixed(1)+'%</strong>. Minimal ketones. Gut health <strong class="warn">'+Math.round(st.gut*100)+'%</strong>. Inflammation <strong class="warn">'+st.inf.toFixed(1)+'</strong>. Weight gain: <strong class="warn">+'+Math.abs(d.wtChg).toFixed(1)+' kg</strong>. <br><br><strong>Tip:</strong> Reduce Iftar portions or increase activity.';
+  $('storyText').innerHTML=story;
+  const rptCards=[{title:'Weight',val:(d.wtChg>=0?'-':'+')+Math.abs(d.wtChg).toFixed(1)+' kg',good:d.wtChg>=0,desc:n+'-day projection'},{title:'Metabolic',val:isDef?'Improving':'Declining',good:isDef,desc:'Insulin sens: '+Math.round(st.insSens*100)+'%'},{title:'Risk',val:Math.round(c.s10.val)+'%',good:c.s10.val<0,desc:'Composite trajectory'}];
+  $('reportSum').innerHTML=rptCards.map(c=>'<div class="rpt-card"><div class="rpt-card-head"><div class="rpt-card-title">'+c.title+'</div><div class="rpt-card-badge '+(c.good?'good':'bad')+'">'+(c.good?'On Track':'Attention')+'</div></div><div class="rpt-card-val '+(c.good?'good':'bad')+'">'+c.val+'</div><div class="rpt-card-desc">'+c.desc+'</div></div>').join('');
+  const recs=isDef?[{ico:'✅',txt:'<strong>Continue:</strong> Your deficit is optimal.'},{ico:'💧',txt:'<strong>Hydrate:</strong> 2-3L between Iftar & Suhoor.'},{ico:'🥗',txt:'<strong>Protein:</strong> 1.6g/kg to preserve muscle.'},{ico:'🚶',txt:'<strong>Walk:</strong> 20-30 min after Iftar.'}]:[{ico:'⚠️',txt:'<strong>Reduce:</strong> Cut Iftar by 300-500 kcal.'},{ico:'🍽️',txt:'<strong>Mindful:</strong> Start with soup & salad.'},{ico:'🏃',txt:'<strong>Exercise:</strong> Add 30-45 min activity.'},{ico:'🚫',txt:'<strong>Limit sweets:</strong> Reduce sugary drinks.'}];
+  $('reportRecs').innerHTML='<div class="recs-title">Recommendations</div><div class="recs-list">'+recs.map(r=>'<div class="rec-item"><div class="ico">'+r.ico+'</div><div class="txt">'+r.txt+'</div></div>').join('')+'</div>';
+}
+function showModal(idx,day){
+  const d=E.days[day-1],steps=['s1','s2','s3','s4','s5','s6','s7','s8','s9','s10'],s=d.c[steps[idx]];
+  $('modal').className='modal '+(s.good?'good':'bad');
+  let dv;
+  if(s.unit==='kcal')dv=(s.val>=0?'+':'')+s.val+' kcal';
+  else if(s.unit==='mmol/L')dv=s.val.toFixed(2)+' mmol/L';
+  else dv=(s.val>=0?'+':'')+Math.round(s.val)+s.unit;
+  $('modalContent').innerHTML='<div class="modal-ico">'+s.icon+'</div><div class="modal-title">Step '+(idx+1)+': '+s.name+'</div><div class="modal-sub">Cascade Position '+(idx+1)+'/10</div><div class="modal-val '+(s.good?'good':'bad')+'">'+dv+'</div><div class="modal-status '+(s.good?'good':'bad')+'">'+(s.good?'✓ Working FOR you':'⚠️ Working AGAINST you')+'</div><div class="modal-section"><div class="modal-section-title">What This Means</div><div class="modal-section-text">'+s.explain+'</div></div><div class="modal-section"><div class="modal-section-title">📐 Formula</div><div class="modal-formula">'+s.formula+'</div></div>'+(idx>0?'<div class="modal-section"><div class="modal-section-title">⛓️ Dependencies</div><div class="modal-section-text">This depends on outputs from <strong>Steps 1-'+idx+'</strong>. Changes upstream affect this value.</div></div>':'');
+  $('modalBg').classList.add('show');
+}
+function closeModal(e){if(!e||e.target===$('modalBg'))$('modalBg').classList.remove('show');}
+function updateCal(){S.cal=+$('calSlider').value;$('calVal').innerHTML=S.cal+'<span class="unit">kcal</span>';$('calFill').style.width=((S.cal-500)/(6000-500)*100)+'%';recalc();}
+function updateFast(){S.fast=+$('fastSlider').value;$('fastVal').innerHTML=S.fast+'<span class="unit">hrs</span>';$('fastFill').style.width=((S.fast-8)/(22-8)*100)+'%';recalc();}
+function setAct(el){document.querySelectorAll('.act-btn[data-m]').forEach(b=>b.classList.remove('active'));el.classList.add('active');S.actM=+el.dataset.m;recalc();}
+function toggleFlag(f){S.flags[f]=!S.flags[f];const el=$('flag'+f.charAt(0).toUpperCase()+f.slice(1));el.classList.toggle('active',S.flags[f]);recalc();}
+function recalc(){
+  const tdee=F.tdee(),gap=tdee-S.cal,isDef=gap>0;
+  $('sumBurn').textContent=tdee;$('sumEat').textContent=S.cal;$('sumGap').textContent=(gap>=0?'+':'')+gap;$('sumGap').className='val '+(isDef?'gap':'excess');
+  $('summaryBox').className='summary '+(isDef?'deficit':'surplus');$('sumMsg').className='sum-msg '+(isDef?'good':'bad');$('sumMsg').textContent=isDef?'✓ Deficit: Burning ~'+gap+' kcal/day from body fat':'⚠️ Surplus: Storing ~'+Math.abs(gap)+' kcal/day as fat';
+  $('statGap').textContent=(gap>=0?'+':'')+gap;$('statGap').className='top-stat-val '+(isDef?'pos':'neg');
+  const fat30=(gap*30/7700).toFixed(1);$('statFat').textContent=(+fat30>=0?'-':'+')+Math.abs(fat30)+'kg';$('statFat').className='top-stat-val '+(+fat30>=0?'pos':'neg');
+  const liverEst=isDef?-Math.round(+fat30*8):Math.round(Math.abs(+fat30)*6);$('statLiver').textContent=(liverEst<=0?'':'+')+(liverEst)+'%';$('statLiver').className='top-stat-val '+(liverEst<=0?'pos':'neg');
+  const modeEl=$('modeInd');modeEl.className='mode-ind '+(isDef?'deficit':'surplus');modeEl.innerHTML='<div class="dot"></div><span>'+(isDef?'Fat Burning':'Fat Storage')+'</span>';
+}
+recalc();
+</script>
 </body>
 </html>
